@@ -1,5 +1,5 @@
 import React from "react";
-import smartcityImg from "../assets/smartcity.png";
+import smartcityImg from "../assets/smartcity.svg";
 import reactImg from "../assets/react.svg";
 
 // Inline SVG icons for social media (lucide-react removed brand icons in v1)
