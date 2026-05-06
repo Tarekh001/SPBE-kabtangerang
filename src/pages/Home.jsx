@@ -3,8 +3,11 @@ import {
   FileText, BookOpen, Shield, Settings, Layers, Globe,
   ChevronRight, Filter, Calendar, TrendingUp, CheckCircle,
   ArrowRight, ExternalLink, Star, Award, Target, BarChart2,
-  Download, Eye
+  Download, Eye, Loader2, Search
 } from 'lucide-react';
+import heroBg from '../assets/baru.jpg';
+import ilustrasiTentang from '../assets/tentang-spbe.jpg'; // Ganti dengan nama file gambar Anda jika berbeda
+import { fetchKebijakan } from '../utils/helpers';
 
 // ─────────────────────────────────────────────
 // DUMMY DATA
@@ -89,8 +92,8 @@ const ProgressBar = ({ value }) => (
         background: value === 100
           ? 'linear-gradient(90deg, #10b981, #34d399)'
           : value >= 70
-          ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)'
-          : 'linear-gradient(90deg, #f59e0b, #fbbf24)',
+            ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)'
+            : 'linear-gradient(90deg, #f59e0b, #fbbf24)',
       }}
     />
   </div>
@@ -101,84 +104,25 @@ const ProgressBar = ({ value }) => (
 // ─────────────────────────────────────────────
 
 const HeroSection = () => {
-  const scrollToTentang = () => {
-    document.getElementById('section-tentang')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const stats = [
-    { icon: Award, nilai: '3.2', satuan: '/5.0', label: 'Indeks SPBE 2023' },
-    { icon: Target, nilai: '42', satuan: ' OPD', label: 'Terintegrasi' },
-    { icon: Globe, nilai: '32+', satuan: '', label: 'Layanan Digital' },
-    { icon: BarChart2, nilai: '150K+', satuan: '', label: 'Pengguna Aktif' },
-  ];
-
   return (
     <section
       id="section-hero"
-      className="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden"
+      className="relative z-0 min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      {/* Background gradient orbs */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-2/3 left-1/2 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      {/* Background image */}
+      <div className="absolute inset-0 -z-10 ">
+        <img src={heroBg} alt="Background" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-slate-900/60" /> {/* Overlay tipis agar teks tetap terbaca */}
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 text-center">
-        <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-sm text-slate-300 mb-6 animate-fade-in">
-          <Star size={13} className="text-yellow-400 fill-yellow-400" />
-          Sistem Pemerintahan Berbasis Elektronik
-        </div>
-
-        <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight animate-fade-in-up">
-          SPBE{' '}
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Kabupaten
+      <div className="w-full px-8 md:px-16 text-left pt-32">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-[#f5f5f5] mb-6 leading-tight animate-fade-in-up">
+          Selamat{' '}
+          <span>
+            Datang
           </span>
-          <br />Tangerang
+          <br />Di SPBE Kabupaten Tangerang
         </h1>
-
-        <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
-          Transformasi digital pemerintahan menuju pelayanan publik yang lebih cepat,
-          transparan, dan berdaya saing melalui integrasi teknologi informasi.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-up delay-300">
-          <button
-            onClick={scrollToTentang}
-            className="flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
-          >
-            Pelajari SPBE <ArrowRight size={18} />
-          </button>
-          <button
-            onClick={() => document.getElementById('section-domain')?.scrollIntoView({ behavior: 'smooth' })}
-            className="flex items-center gap-2 px-7 py-3.5 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 hover:border-purple-500/40 transition-all duration-300"
-          >
-            Lihat Regulasi <ChevronRight size={18} />
-          </button>
-        </div>
-
-        {/* Stats strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in-up delay-400">
-          {stats.map(({ icon: Icon, nilai, satuan, label }) => (
-            <div
-              key={label}
-              className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 group"
-            >
-              <Icon size={20} className="text-purple-400 mb-2 mx-auto group-hover:scale-110 transition-transform" />
-              <div className="text-2xl font-bold text-white">
-                {nilai}<span className="text-purple-400 text-sm">{satuan}</span>
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5">{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-500 text-xs animate-bounce">
-        <span>Scroll</span>
-        <ChevronRight size={14} className="rotate-90" />
       </div>
     </section>
   );
@@ -188,102 +132,221 @@ const HeroSection = () => {
 // SECTION: TENTANG SPBE
 // ─────────────────────────────────────────────
 
-const TentangSection = () => {
-  return (
-    <section id="section-tentang" className="py-24 bg-white/2">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <SectionHeader
-          label="Tentang Kami"
-          title="Apa itu SPBE?"
-          subtitle="Sistem Pemerintahan Berbasis Elektronik adalah penyelenggaraan pemerintahan yang memanfaatkan teknologi informasi dan komunikasi untuk memberikan layanan kepada pengguna SPBE."
-        />
+const TABS_KEBIJAKAN = [
+  { id: 'presiden', label: 'Peraturan Presiden' },
+  { id: 'mentri', label: 'Peraturan Menteri' },
+  { id: 'pedoman', label: 'Pedoman Menteri' },
+  { id: 'walikota', label: 'Peraturan Walikota' },
+  { id: 'keputusan', label: 'Keputusan Walikota' },
+];
 
-        {/* Deskripsi + poin */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-7 hover:border-purple-500/30 transition-colors">
-            <BookOpen size={28} className="text-purple-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-3">Latar Belakang</h3>
-            <p className="text-slate-400 text-sm leading-relaxed mb-4">
-              Kabupaten Tangerang berkomitmen menjalankan amanat Peraturan Presiden Nomor 95 Tahun 2018
-              tentang SPBE. Melalui SPBE, pemerintah daerah mendorong pemanfaatan teknologi untuk
-              mewujudkan birokrasi berkelas dunia yang efisien, efektif, dan akuntabel.
-            </p>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              SPBE Kabupaten Tangerang dikelola oleh Dinas Komunikasi dan Informatika (Diskominfo)
-              sebagai koordinator pengembangan dan evaluasi transformasi digital di seluruh Organisasi
-              Perangkat Daerah (OPD).
-            </p>
+const KebijakanUI = () => {
+  const [activeTab, setActiveTab] = useState('presiden');
+  const [dataKebijakan, setDataKebijakan] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const memuatData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await fetchKebijakan(activeTab);
+        setDataKebijakan(result || []); 
+      } catch (err) {
+        setError('Gagal memuat aturan kebijakan. Silakan periksa koneksi Anda dan coba kembali sesaat lagi.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    memuatData();
+  }, [activeTab]);
+
+  return (
+    <div className="py-16 mt-8 mb-16 bg-[#f5f5f5] border border-gray-200 rounded-3xl shadow-sm px-6">
+      <div className="text-center mb-10">
+        <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+          Regulasi & Kebijakan SPBE
+        </h3>
+        <p className="text-gray-600 max-w-2xl mx-auto text-sm">
+          Kumpulan regulasi, pedoman, dan peraturan yang menjadi landasan hukum penerapan Sistem Pemerintahan Berbasis Elektronik (SPBE).
+        </p>
+      </div>
+
+      {/* Tab Navigasi Kategori */}
+      <div className="flex flex-wrap justify-center gap-2 mb-10">
+        {TABS_KEBIJAKAN.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-full font-semibold text-xs transition-all duration-300 shadow-sm ${
+                isActive
+                  ? 'bg-purple-600 text-white ring-2 ring-purple-600 ring-offset-2 scale-105'
+                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:text-purple-600'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Status Loading */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-purple-600 animate-spin mb-3" />
+          <p className="text-gray-500 text-sm font-medium">Memuat kebijakan...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl w-full max-w-xl mx-auto border border-red-100 shadow-sm text-sm text-center">
+          {error}
+        </div>
+      ) : dataKebijakan.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+          <Search className="w-10 h-10 mb-3 opacity-50 text-gray-300" />
+          <p className="text-sm">Belum ada data dokumen kebijakan pada kategori ini.</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left">
+           {dataKebijakan.map((item) => (
+              <div 
+                 key={item.id} 
+                 className="bg-white border border-gray-100 p-5 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+              >
+                 <div>
+                    <div className="flex justify-between items-start mb-3">
+                       <span className="bg-purple-100 text-purple-700 px-2 py-0.5 text-[10px] font-bold rounded-full">
+                         Tahun {item.tahun}
+                       </span>
+                       <FileText className="text-gray-300 group-hover:text-purple-400 transition-colors w-4 h-4"/>
+                    </div>
+                    <h4 className="text-purple-600 text-xs font-bold mb-1 font-mono">
+                       {item.nomor}
+                    </h4>
+                    <h3 className="text-gray-800 font-semibold mb-3 text-sm leading-relaxed line-clamp-3">
+                       {item.judul}
+                    </h3>
+                 </div>
+                 
+                 <a 
+                   href={item.link} 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-purple-600 font-semibold border-t border-gray-50 pt-3 mt-1 transition-colors"
+                 >
+                   Lihat Referensi <ExternalLink size={14} />
+                 </a>
+              </div>
+           ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TentangSection = () => {
+  const stats = [
+    { icon: Award, nilai: '3.2', satuan: '/5.0', label: 'Indeks SPBE 2023' },
+    { icon: Target, nilai: '42', satuan: ' OPD', label: 'Terintegrasi' },
+    { icon: Globe, nilai: '32+', satuan: '', label: 'Layanan Digital' },
+    { icon: BarChart2, nilai: '150K+', satuan: '', label: 'Pengguna Aktif' },
+  ];
+
+  return (
+    <section id="section-tentang" className="py-24 bg-[#f5f5f5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+        {/* Tentang SPBE */}
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+          {/* KIRI - GAMBAR */}
+          <div className="flex justify-center">
+            <img
+              src={ilustrasiTentang}
+              alt="Tentang SPBE"
+              className="max-w-md w-full rounded-2xl shadow-xl transition-transform hover:scale-105"
+            />
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-7 hover:border-purple-500/30 transition-colors">
-            <Target size={28} className="text-blue-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-3">Tujuan SPBE</h3>
-            <ul className="space-y-3">
-              {[
-                'Mewujudkan tata kelola pemerintahan yang bersih dan transparan',
-                'Meningkatkan kualitas pelayanan publik berbasis digital',
-                'Mendorong efisiensi dan efektivitas penyelenggaraan pemerintahan',
-                'Mengintegrasikan sistem informasi di seluruh OPD',
-                'Menjamin keamanan data dan informasi pemerintah daerah',
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-slate-400 text-sm">
-                  <CheckCircle size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+          {/* KANAN - TEKS */}
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              Apa itu SPBE?
+            </h2>
+
+            <p className="text-gray-600 leading-relaxed mb-6 text-lg">
+              Berdasarkan Peraturan Presiden Nomor 95 Tahun 2018, SPBE adalah
+              penyelenggaraan pemerintahan berbasis teknologi informasi dan komunikasi
+              untuk meningkatkan layanan publik.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Efektivitas</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Keterpaduan</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Kesinambungan</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Efisiensi</li>
+              </ul>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Akuntabilitas</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Interoperabilitas</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-purple-600"/> Keamanan</li>
+              </ul>
+            </div>
           </div>
         </div>
 
+        {/* --- KOMPONEN KEBIJAKAN SPBE --- */}
+        <KebijakanUI />
+
         {/* Dokumen API */}
-        <div>
+        <div className="mt-16">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-              <FileText size={22} className="text-purple-400" />
+            <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <FileText size={22} className="text-purple-600" />
               Dokumen &amp; Referensi
             </h3>
-            <span className="text-xs text-slate-500 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
-              {dokumenAPI.length} dokumen tersedia
+            <span className="text-xs text-purple-700 font-medium bg-purple-100 border border-purple-200 px-3 py-1 rounded-full">
+              {dokumenAPI.filter((doc) => doc.tipe === 'PDF').length} dokumen PDF
             </span>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dokumenAPI.map((doc) => (
-              <div
-                key={doc.id}
-                className="group bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/8 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-900/20 transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded ${
-                      doc.tipe === 'PDF'
-                        ? 'bg-red-500/20 text-red-400'
-                        : doc.tipe === 'YAML'
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-blue-500/20 text-blue-400'
-                    }`}
-                  >
-                    {doc.tipe}
-                  </span>
-                  <span className="text-xs text-slate-500">{doc.ukuran}</span>
+            {dokumenAPI
+              .filter((doc) => doc.tipe === 'PDF')
+              .map((doc) => (
+                <div
+                  key={doc.id}
+                  className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-purple-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-600">
+                        {doc.tipe}
+                      </span>
+                      <span className="text-xs text-slate-500 font-medium">{doc.ukuran}</span>
+                    </div>
+                    <h4 className="text-gray-800 text-sm font-semibold mb-2 group-hover:text-purple-600 transition-colors">
+                      {doc.judul}
+                    </h4>
+                    <p className="text-xs text-slate-500 mb-4">{doc.tanggal} · {doc.kategori}</p>
+                  </div>
+                  <div className="border-t border-gray-100 pt-3 mt-2">
+                    <a
+                      href={doc.link || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                    >
+                      <Eye size={14} /> Lihat PDF
+                    </a>
+                  </div>
                 </div>
-                <h4 className="text-white text-sm font-semibold mb-1 group-hover:text-purple-300 transition-colors">
-                  {doc.judul}
-                </h4>
-                <p className="text-xs text-slate-500 mb-4">{doc.tanggal} · {doc.kategori}</p>
-                <div className="flex gap-2">
-                  <button className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors">
-                    <Eye size={12} /> Lihat
-                  </button>
-                  <span className="text-slate-700">·</span>
-                  <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors">
-                    <Download size={12} /> Unduh
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
+
       </div>
     </section>
   );
@@ -329,11 +392,10 @@ const DomainSection = ({ activeFilter, setActiveFilter }) => {
               <button
                 key={cat}
                 onClick={() => setActiveFilter(cat)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${isActive
                     ? `bg-gradient-to-r ${colorMap[cat]} text-white shadow-lg scale-105`
                     : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`}
               >
                 <CatIcon size={15} />
                 {cat}
@@ -418,7 +480,7 @@ const ImplementasiSection = () => {
   };
 
   return (
-    <section id="section-implementasi" className="py-24 bg-white/2">
+    <section id="section-implementasi" className="py-24 bg-[#f5f5f5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeader
           label="Progres &amp; Capaian"
@@ -446,11 +508,10 @@ const ImplementasiSection = () => {
               <button
                 key={t}
                 onClick={() => setSelectedTahun(t)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  selectedTahun === t
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTahun === t
                     ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
                     : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10'
-                }`}
+                  }`}
               >
                 {t !== 'Semua' && <Calendar size={12} />}
                 {t}
@@ -533,7 +594,7 @@ const Home = ({ domainFilter, setDomainFilter }) => {
   }, [domainFilter, setDomainFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen bg-[#f5f5f5] text-white">
       <HeroSection />
       <TentangSection />
       <DomainSection activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
