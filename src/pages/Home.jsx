@@ -72,16 +72,16 @@ const KATEGORI_ICONS = {
 
 const SectionHeader = ({ label, title, subtitle }) => (
   <div className="text-center mb-12">
-    <span className="inline-block px-3 py-1 bg-purple-600/20 border border-purple-500/30 rounded-full text-purple-400 text-xs font-semibold uppercase tracking-widest mb-4">
+    <span className="inline-block px-3 py-1 bg-[#0057A4]/20 border border-[#0057A4]/30 rounded-full text-[#0057A4] text-xs font-semibold uppercase tracking-widest mb-4">
       {label}
     </span>
-    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">{title}</h2>
-    {subtitle && <p className="text-slate-400 max-w-2xl mx-auto text-base leading-relaxed">{subtitle}</p>}
+    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">{title}</h2>
+    {subtitle && <p className="text-slate-500 max-w-2xl mx-auto text-base leading-relaxed">{subtitle}</p>}
   </div>
 );
 
 const ProgressBar = ({ value }) => (
-  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
     <div
       className="h-full rounded-full transition-all duration-1000"
       style={{
@@ -113,72 +113,65 @@ const HeroSection = () => {
   ];
 
   return (
-    <section
-      id="section-hero"
-      className="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden"
-    >
-      {/* Background gradient orbs */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-2/3 left-1/2 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
+    <section id="section-hero" className="relative w-full bg-slate-50 overflow-hidden pb-16">
+      {/* Top Background - Requested Color #0057A4 */}
+      <div className="absolute top-0 left-0 w-full h-[40%] sm:h-[45%] lg:h-[48%] bg-[#0057A4] border-b border-[#004b8d] z-0"></div>
 
-      <div className="max-w-5xl mx-auto px-4 text-center">
-        <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-sm text-slate-300 mb-6 animate-fade-in">
-          <Star size={13} className="text-yellow-400 fill-yellow-400" />
-          Sistem Pemerintahan Berbasis Elektronik
+      <div className="relative z-10 flex flex-col items-center pt-32 px-4 max-w-6xl mx-auto">
+        
+        {/* Text Content Above Image */}
+        <div className="text-center max-w-4xl mx-auto mb-10">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-white mb-5 leading-tight animate-fade-in-up">
+            Selamat Datang di SPBE Kabupaten Tangerang
+          </h1>
+          
+          <p className="text-sm md:text-lg text-blue-50 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200">
+            Transformasi digital pemerintahan menuju pelayanan publik yang lebih cepat, transparan, dan berdaya saing melalui integrasi teknologi informasi
+          </p>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight animate-fade-in-up">
-          SPBE{' '}
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Kabupaten
-          </span>
-          <br />Tangerang
-        </h1>
-
-        <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up delay-200">
-          Transformasi digital pemerintahan menuju pelayanan publik yang lebih cepat,
-          transparan, dan berdaya saing melalui integrasi teknologi informasi.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-up delay-300">
-          <button
-            onClick={scrollToTentang}
-            className="flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300"
-          >
-            Pelajari SPBE <ArrowRight size={18} />
-          </button>
-          <button
-            onClick={() => document.getElementById('section-domain')?.scrollIntoView({ behavior: 'smooth' })}
-            className="flex items-center gap-2 px-7 py-3.5 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 hover:border-purple-500/40 transition-all duration-300"
-          >
-            Lihat Regulasi <ChevronRight size={18} />
-          </button>
+        {/* Center Image intersecting backgrounds */}
+        <div className="w-full max-w-4xl relative mb-16 shadow-2xl rounded-2xl ring-4 ring-white/50 bg-white p-2 animate-smooth-float animate-pulse-glow">
+          <img 
+            src="/beranda.svg" 
+            alt="Beranda SPBE Kabupaten Tangerang" 
+            className="w-full h-auto object-contain object-center max-h-[500px] rounded-xl"
+          />
         </div>
 
-        {/* Stats strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in-up delay-400">
-          {stats.map(({ icon: Icon, nilai, satuan, label }) => (
-            <div
-              key={label}
-              className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 group"
+        {/* Actions & Stats Below Image */}
+        <div className="max-w-5xl mx-auto w-full animate-fade-in-up delay-300">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <button
+              onClick={scrollToTentang}
+              className="flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#0057A4] to-[#00478F] text-white rounded-xl font-semibold shadow-lg shadow-[#0057A4]/30 hover:shadow-[#0057A4]/50 hover:scale-105 transition-all duration-300"
             >
-              <Icon size={20} className="text-purple-400 mb-2 mx-auto group-hover:scale-110 transition-transform" />
-              <div className="text-2xl font-bold text-white">
-                {nilai}<span className="text-purple-400 text-sm">{satuan}</span>
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5">{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+              Pelajari SPBE <ArrowRight size={18} />
+            </button>
+            <button
+              onClick={() => document.getElementById('section-domain')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex items-center gap-2 px-7 py-3.5 bg-white shadow-sm border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all duration-300"
+            >
+              Lihat Regulasi <ChevronRight size={18} />
+            </button>
+          </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-slate-500 text-xs animate-bounce">
-        <span>Scroll</span>
-        <ChevronRight size={14} className="rotate-90" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map(({ icon: Icon, nilai, satuan, label }) => (
+              <div
+                key={label}
+                className="bg-white shadow-sm border border-slate-200 rounded-2xl p-5 hover:bg-slate-50 hover:border-[#0057A4]/30 transition-all duration-300 group text-center"
+              >
+                <Icon size={24} className="text-[#0057A4] mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                <div className="text-3xl font-bold text-slate-900 mb-1">
+                  {nilai}<span className="text-[#0057A4] text-base">{satuan}</span>
+                </div>
+                <div className="text-sm font-medium text-slate-500">{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
@@ -190,7 +183,7 @@ const HeroSection = () => {
 
 const TentangSection = () => {
   return (
-    <section id="section-tentang" className="py-24 bg-white/2">
+    <section id="section-tentang" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeader
           label="Tentang Kami"
@@ -200,24 +193,24 @@ const TentangSection = () => {
 
         {/* Deskripsi + poin */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-7 hover:border-purple-500/30 transition-colors">
-            <BookOpen size={28} className="text-purple-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-3">Latar Belakang</h3>
-            <p className="text-slate-400 text-sm leading-relaxed mb-4">
+          <div className="bg-white shadow-sm border border-slate-200 rounded-2xl p-7 hover:border-[#0057A4]/30 transition-colors">
+            <BookOpen size={28} className="text-[#0057A4] mb-4" />
+            <h3 className="text-xl font-bold text-slate-900 mb-3">Latar Belakang</h3>
+            <p className="text-slate-500 text-sm leading-relaxed mb-4">
               Kabupaten Tangerang berkomitmen menjalankan amanat Peraturan Presiden Nomor 95 Tahun 2018
               tentang SPBE. Melalui SPBE, pemerintah daerah mendorong pemanfaatan teknologi untuk
               mewujudkan birokrasi berkelas dunia yang efisien, efektif, dan akuntabel.
             </p>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-slate-500 text-sm leading-relaxed">
               SPBE Kabupaten Tangerang dikelola oleh Dinas Komunikasi dan Informatika (Diskominfo)
               sebagai koordinator pengembangan dan evaluasi transformasi digital di seluruh Organisasi
               Perangkat Daerah (OPD).
             </p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-7 hover:border-purple-500/30 transition-colors">
+          <div className="bg-white shadow-sm border border-slate-200 rounded-2xl p-7 hover:border-[#0057A4]/30 transition-colors">
             <Target size={28} className="text-blue-400 mb-4" />
-            <h3 className="text-xl font-bold text-white mb-3">Tujuan SPBE</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">Tujuan SPBE</h3>
             <ul className="space-y-3">
               {[
                 'Mewujudkan tata kelola pemerintahan yang bersih dan transparan',
@@ -226,7 +219,7 @@ const TentangSection = () => {
                 'Mengintegrasikan sistem informasi di seluruh OPD',
                 'Menjamin keamanan data dan informasi pemerintah daerah',
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-slate-400 text-sm">
+                <li key={i} className="flex items-start gap-2.5 text-slate-500 text-sm">
                   <CheckCircle size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
                   {item}
                 </li>
@@ -238,11 +231,11 @@ const TentangSection = () => {
         {/* Dokumen API */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-              <FileText size={22} className="text-purple-400" />
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <FileText size={22} className="text-[#0057A4]" />
               Dokumen &amp; Referensi
             </h3>
-            <span className="text-xs text-slate-500 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+            <span className="text-xs text-slate-600 bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-full">
               {dokumenAPI.length} dokumen tersedia
             </span>
           </div>
@@ -251,7 +244,7 @@ const TentangSection = () => {
             {dokumenAPI.map((doc) => (
               <div
                 key={doc.id}
-                className="group bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/8 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-900/20 transition-all duration-300"
+                className="group bg-white shadow-sm border border-slate-200 rounded-xl p-5 hover:bg-slate-50 hover:border-[#0057A4]/30 hover:shadow-lg hover:shadow-[#0057A4]/20 transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-3">
                   <span
@@ -265,18 +258,18 @@ const TentangSection = () => {
                   >
                     {doc.tipe}
                   </span>
-                  <span className="text-xs text-slate-500">{doc.ukuran}</span>
+                  <span className="text-xs text-slate-600">{doc.ukuran}</span>
                 </div>
-                <h4 className="text-white text-sm font-semibold mb-1 group-hover:text-purple-300 transition-colors">
+                <h4 className="text-slate-900 text-sm font-semibold mb-1 group-hover:text-[#0057A4] transition-colors">
                   {doc.judul}
                 </h4>
-                <p className="text-xs text-slate-500 mb-4">{doc.tanggal} · {doc.kategori}</p>
+                <p className="text-xs text-slate-600 mb-4">{doc.tanggal} · {doc.kategori}</p>
                 <div className="flex gap-2">
-                  <button className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors">
+                  <button className="flex items-center gap-1 text-xs text-[#0057A4] hover:text-[#0057A4] transition-colors">
                     <Eye size={12} /> Lihat
                   </button>
                   <span className="text-slate-700">·</span>
-                  <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors">
+                  <button className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-900 transition-colors">
                     <Download size={12} /> Unduh
                   </button>
                 </div>
@@ -298,17 +291,19 @@ const DomainSection = ({ activeFilter, setActiveFilter }) => {
   const Icon = KATEGORI_ICONS[activeFilter] || Shield;
 
   const colorMap = {
-    Kebijakan: 'from-purple-600 to-violet-600',
+    Kebijakan: 'from-[#0057A4] to-[#00478F]',
     'Tata Kelola': 'from-blue-600 to-cyan-600',
     Manajemen: 'from-indigo-600 to-blue-600',
-    Layanan: 'from-emerald-600 to-teal-600',
+    'Tata Kelola': 'from-[#0057A4] to-[#00478F]',
+    Manajemen: 'from-[#0057A4] to-[#00478F]',
+    Layanan: 'from-[#0057A4] to-[#00478F]',
   };
 
   const badgeColor = {
-    Kebijakan: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    'Tata Kelola': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    Manajemen: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-    Layanan: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    Kebijakan: 'bg-[#0057A4]/20 text-[#0057A4] border-[#0057A4]/30',
+    'Tata Kelola': 'bg-[#0057A4]/20 text-[#0057A4] border-[#0057A4]/30',
+    Manajemen: 'bg-[#0057A4]/20 text-[#0057A4] border-[#0057A4]/30',
+    Layanan: 'bg-[#0057A4]/20 text-[#0057A4] border-[#0057A4]/30',
   };
 
   return (
@@ -332,7 +327,7 @@ const DomainSection = ({ activeFilter, setActiveFilter }) => {
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
                   isActive
                     ? `bg-gradient-to-r ${colorMap[cat]} text-white shadow-lg scale-105`
-                    : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
+                    : 'bg-white shadow-sm border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 <CatIcon size={15} />
@@ -346,13 +341,13 @@ const DomainSection = ({ activeFilter, setActiveFilter }) => {
         </div>
 
         {/* Active category header */}
-        <div className={`flex items-center gap-3 mb-6 p-4 bg-gradient-to-r ${colorMap[activeFilter]}/10 border border-white/10 rounded-xl`}>
+        <div className={`flex items-center gap-3 mb-6 p-4 bg-gradient-to-r ${colorMap[activeFilter]}/10 border border-slate-200 rounded-xl`}>
           <div className={`p-2 bg-gradient-to-r ${colorMap[activeFilter]} rounded-lg`}>
-            <Icon size={20} className="text-white" />
+            <Icon size={20} className="text-slate-900" />
           </div>
           <div>
-            <h3 className="text-white font-bold">{activeFilter}</h3>
-            <p className="text-slate-400 text-xs">{peraturan.length} peraturan ditemukan</p>
+            <h3 className="text-slate-900 font-bold">{activeFilter}</h3>
+            <p className="text-slate-500 text-xs">{peraturan.length} peraturan ditemukan</p>
           </div>
         </div>
 
@@ -361,24 +356,24 @@ const DomainSection = ({ activeFilter, setActiveFilter }) => {
           {peraturan.map((p, i) => (
             <div
               key={p.id}
-              className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/8 hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-900/10 transition-all duration-300"
+              className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white shadow-sm border border-slate-200 rounded-xl p-5 hover:bg-slate-50 hover:border-[#0057A4]/20 hover:shadow-lg hover:shadow-[#0057A4]/10 transition-all duration-300"
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-400">
+                <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-white shadow-sm border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div>
-                  <p className="text-xs text-purple-400 font-mono mb-1">{p.nomor}</p>
-                  <h4 className="text-white text-sm font-semibold group-hover:text-purple-200 transition-colors">{p.judul}</h4>
+                  <p className="text-xs text-[#0057A4] font-mono mb-1">{p.nomor}</p>
+                  <h4 className="text-slate-900 text-sm font-semibold group-hover:text-[#0057A4] transition-colors">{p.judul}</h4>
                 </div>
               </div>
               <div className="flex items-center gap-3 sm:flex-shrink-0">
-                <span className="text-xs text-slate-500">{p.tahun}</span>
+                <span className="text-xs text-slate-600">{p.tahun}</span>
                 <span className="text-xs px-2 py-1 bg-emerald-500/15 border border-emerald-500/20 text-emerald-400 rounded-full">
                   {p.status}
                 </span>
-                <button className="text-slate-500 hover:text-purple-400 transition-colors">
+                <button className="text-slate-600 hover:text-[#0057A4] transition-colors">
                   <ExternalLink size={14} />
                 </button>
               </div>
@@ -418,7 +413,7 @@ const ImplementasiSection = () => {
   };
 
   return (
-    <section id="section-implementasi" className="py-24 bg-white/2">
+    <section id="section-implementasi" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeader
           label="Progres &amp; Capaian"
@@ -429,8 +424,8 @@ const ImplementasiSection = () => {
         {/* Summary cards */}
         <div className="grid grid-cols-3 gap-4 mb-10">
           {Object.entries(summary).map(([status, count]) => (
-            <div key={status} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center hover:border-purple-500/20 transition-colors">
-              <div className="text-3xl font-extrabold text-white mb-1">{count}</div>
+            <div key={status} className="bg-white shadow-sm border border-slate-200 rounded-2xl p-5 text-center hover:border-[#0057A4]/20 transition-colors">
+              <div className="text-3xl font-extrabold text-slate-900 mb-1">{count}</div>
               <div className={`inline-block text-xs px-2 py-0.5 rounded-full border ${statusColor[status]}`}>{status}</div>
             </div>
           ))}
@@ -440,16 +435,16 @@ const ImplementasiSection = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           {/* Tahun filter */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter size={15} className="text-slate-400" />
-            <span className="text-slate-400 text-sm mr-1">Tahun:</span>
+            <Filter size={15} className="text-slate-500" />
+            <span className="text-slate-500 text-sm mr-1">Tahun:</span>
             {TAHUN_OPTIONS.map((t) => (
               <button
                 key={t}
                 onClick={() => setSelectedTahun(t)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   selectedTahun === t
-                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
-                    : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10'
+                    ? 'bg-[#0057A4] text-slate-900 shadow-lg shadow-[#0057A4]/20'
+                    : 'bg-white shadow-sm border border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 {t !== 'Semua' && <Calendar size={12} />}
@@ -459,15 +454,15 @@ const ImplementasiSection = () => {
           </div>
           {/* Sort */}
           <div className="flex items-center gap-2">
-            <TrendingUp size={15} className="text-slate-400" />
-            <span className="text-slate-400 text-sm">Urutkan:</span>
+            <TrendingUp size={15} className="text-slate-500" />
+            <span className="text-slate-500 text-sm">Urutkan:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white/5 border border-white/10 text-slate-300 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-purple-500 cursor-pointer"
+              className="bg-white shadow-sm border border-slate-200 text-slate-600 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#0057A4] cursor-pointer"
             >
-              <option value="progres" className="bg-slate-800">Progres (Tertinggi)</option>
-              <option value="nama" className="bg-slate-800">Nama (A–Z)</option>
+              <option value="progres" className="bg-white">Progres (Tertinggi)</option>
+              <option value="nama" className="bg-white">Nama (A–Z)</option>
             </select>
           </div>
         </div>
@@ -475,35 +470,35 @@ const ImplementasiSection = () => {
         {/* Items */}
         <div className="grid gap-4">
           {filtered.length === 0 && (
-            <div className="text-center text-slate-500 py-16">
+            <div className="text-center text-slate-600 py-16">
               Tidak ada data untuk tahun {selectedTahun}.
             </div>
           )}
           {filtered.map((item, i) => (
             <div
               key={item.id}
-              className="group bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/8 hover:border-purple-500/20 hover:shadow-xl hover:shadow-purple-900/10 transition-all duration-300"
+              className="group bg-white shadow-sm border border-slate-200 rounded-2xl p-6 hover:bg-slate-50 hover:border-[#0057A4]/20 hover:shadow-xl hover:shadow-[#0057A4]/10 transition-all duration-300"
               style={{ animationDelay: `${i * 50}ms` }}
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 bg-white/10 border border-white/10 text-slate-400 rounded-full">
+                    <span className="text-xs px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 rounded-full">
                       {item.tahun}
                     </span>
-                    <span className="text-xs text-slate-500">{item.kategori}</span>
+                    <span className="text-xs text-slate-600">{item.kategori}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full border ${statusColor[item.status]}`}>
                       {item.status}
                     </span>
                   </div>
-                  <h4 className="text-white font-semibold mb-1 group-hover:text-purple-200 transition-colors">
+                  <h4 className="text-slate-900 font-semibold mb-1 group-hover:text-[#0057A4] transition-colors">
                     {item.nama}
                   </h4>
-                  <p className="text-slate-500 text-xs">{item.capaian}</p>
+                  <p className="text-slate-600 text-xs">{item.capaian}</p>
                 </div>
                 <div className="sm:text-right sm:flex-shrink-0">
-                  <span className="text-2xl font-extrabold text-white">{item.progres}%</span>
-                  <p className="text-xs text-slate-500">progres</p>
+                  <span className="text-2xl font-extrabold text-slate-900">{item.progres}%</span>
+                  <p className="text-xs text-slate-600">progres</p>
                 </div>
               </div>
               <div className="mt-4">
@@ -533,7 +528,7 @@ const Home = ({ domainFilter, setDomainFilter }) => {
   }, [domainFilter, setDomainFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <HeroSection />
       <TentangSection />
       <DomainSection activeFilter={activeFilter} setActiveFilter={setActiveFilter} />

@@ -40,14 +40,14 @@ const Header = ({ setDomainFilter }) => {
   };
 
   const navLinkClass =
-    'transition-colors duration-200 hover:text-purple-400 cursor-pointer';
+    'transition-colors duration-200 hover:text-[#0057A4] cursor-pointer';
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-slate-900/80 backdrop-blur-xl shadow-lg shadow-purple-900/20 border-b border-white/10'
-          : 'bg-white/5 backdrop-blur-lg border-b border-white/10'
+          ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-[#0057A4]/20 border-b border-slate-200'
+          : 'bg-white shadow-sm backdrop-blur-lg border-b border-slate-200'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
@@ -66,7 +66,7 @@ const Header = ({ setDomainFilter }) => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:block">
-          <ul className="flex items-center gap-7 text-white font-medium text-sm">
+          <ul className="flex items-center gap-7 text-slate-900 font-medium text-sm">
             <li>
               <button
                 onClick={scrollToTop}
@@ -100,7 +100,7 @@ const Header = ({ setDomainFilter }) => {
               </button>
 
               <div
-                className={`absolute left-0 mt-3 w-48 bg-slate-800/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 ${
+                className={`absolute left-0 mt-3 w-48 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 ${
                   isDropdownOpen
                     ? 'opacity-100 visible translate-y-0'
                     : 'opacity-0 invisible -translate-y-2'
@@ -112,7 +112,7 @@ const Header = ({ setDomainFilter }) => {
                       <button
                         key={cat}
                         onClick={() => handleDomainClick(cat)}
-                        className="px-4 py-2.5 text-left text-slate-300 hover:bg-purple-600/20 hover:text-purple-300 transition-colors text-sm"
+                        className="px-4 py-2.5 text-left text-slate-600 hover:bg-[#0057A4]/20 hover:text-[#0057A4] transition-colors text-sm"
                       >
                         {cat}
                       </button>
@@ -144,7 +144,7 @@ const Header = ({ setDomainFilter }) => {
 
         {/* Mobile Hamburger */}
         <button
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="md:hidden text-slate-900 p-2 rounded-lg hover:bg-white/10 transition-colors"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -156,24 +156,24 @@ const Header = ({ setDomainFilter }) => {
       <div
         className={`md:hidden transition-all duration-300 overflow-hidden ${
           mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        } bg-slate-900/95 backdrop-blur-xl border-t border-white/10`}
+        } bg-white/95 backdrop-blur-xl border-t border-slate-200`}
       >
-        <div className="px-6 py-4 flex flex-col gap-3 text-white font-medium text-sm">
-          <button onClick={scrollToTop} className="text-left py-2 hover:text-purple-400 transition-colors">Beranda</button>
-          <button onClick={() => scrollToSection('section-tentang')} className="text-left py-2 hover:text-purple-400 transition-colors">Tentang SPBE</button>
-          <div className="py-2 border-t border-white/5">
-            <p className="text-slate-400 text-xs uppercase tracking-wider mb-2">Domain</p>
+        <div className="px-6 py-4 flex flex-col gap-3 text-slate-900 font-medium text-sm">
+          <button onClick={scrollToTop} className="text-left py-2 hover:text-[#0057A4] transition-colors">Beranda</button>
+          <button onClick={() => scrollToSection('section-tentang')} className="text-left py-2 hover:text-[#0057A4] transition-colors">Tentang SPBE</button>
+          <div className="py-2 border-t border-slate-200">
+            <p className="text-[#0057A4] text-xs uppercase tracking-wider mb-2">Domain</p>
             {['Kebijakan', 'Tata Kelola', 'Manajemen', 'Layanan'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleDomainClick(cat)}
-                className="block w-full text-left py-1.5 pl-3 hover:text-purple-400 transition-colors"
+                className="block w-full text-left py-1.5 pl-3 hover:text-[#0057A4] transition-colors"
               >
                 {cat}
               </button>
             ))}
           </div>
-          <button onClick={() => scrollToSection('section-implementasi')} className="text-left py-2 hover:text-purple-400 transition-colors">Implementasi SPBE</button>
+          <button onClick={() => scrollToSection('section-implementasi')} className="text-left py-2 hover:text-[#0057A4] transition-colors">Implementasi SPBE</button>
         </div>
       </div>
     </header>

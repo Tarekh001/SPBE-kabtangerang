@@ -35,7 +35,7 @@ const TiktokIcon = () => (
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-300 border-t border-white/10">
+    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
 
         {/* Logo & Alamat */}
@@ -44,7 +44,7 @@ const Footer = () => {
             <img
               src={smartcityImg}
               alt="Logo Smart City"
-              className="h-16 w-auto rounded-lg shadow-lg shadow-purple-500/10"
+              className="h-16 w-auto rounded-lg shadow-lg shadow-slate-300"
             />
             <img
               src={reactImg}
@@ -54,25 +54,25 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-1">
+            <h4 className="text-slate-900 font-semibold text-sm uppercase tracking-wider mb-1">
               Alamat
             </h4>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed">
               Jl. H. Somawinata No.1, Gedung Smart Building Puspemkab Tangerang,
               Kec. Tigaraksa, Kabupaten Tangerang, Banten 15720, Indonesia
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-1">
+            <h4 className="text-slate-900 font-semibold text-sm uppercase tracking-wider mb-1">
               Kontak
             </h4>
-            <p className="text-slate-400 text-sm">+62 811-10310632</p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">+62 811-10310632</p>
+            <p className="text-slate-600 text-sm">
               Email:{" "}
               <a
                 href="mailto:diskominfo@tangerangkab.go.id"
-                className="text-purple-400 hover:text-purple-300 transition-colors"
+                className="text-[#0057A4] hover:text-[#0057A4] transition-colors"
               >
                 diskominfo@tangerangkab.go.id
               </a>
@@ -82,7 +82,7 @@ const Footer = () => {
 
         {/* Sosial Media */}
         <div className="flex flex-col items-center md:items-start gap-4">
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wider">
+          <h4 className="text-slate-900 font-semibold text-sm uppercase tracking-wider">
             Temukan Kami di Sosial Media
           </h4>
           <div className="flex items-center gap-3">
@@ -90,9 +90,9 @@ const Footer = () => {
               href="https://x.com/pemkabtangerang"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 
-                         hover:text-white hover:bg-purple-600/20 hover:border-purple-500/50 
-                         transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/20"
+              className="p-2.5 bg-white shadow-sm border border-slate-200 rounded-xl text-slate-600 
+                         hover:text-slate-900 hover:bg-[#0057A4]/20 hover:border-[#0057A4]/50 
+                         transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#0057A4]/20"
             >
               <TwitterIcon />
             </a>
@@ -101,8 +101,8 @@ const Footer = () => {
               href="https://facebook.com/pemkabtangerang"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 
-                         hover:text-white hover:bg-blue-600/20 hover:border-blue-500/50 
+              className="p-2.5 bg-white shadow-sm border border-slate-200 rounded-xl text-slate-600 
+                         hover:text-slate-900 hover:bg-blue-600/20 hover:border-blue-500/50 
                          transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/20"
             >
               <FacebookIcon />
@@ -112,8 +112,8 @@ const Footer = () => {
               href="https://www.tiktok.com/@pemkabtangerang"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 
-                         hover:text-white hover:bg-pink-600/20 hover:border-pink-500/50 
+              className="p-2.5 bg-white shadow-sm border border-slate-200 rounded-xl text-slate-600 
+                         hover:text-slate-900 hover:bg-pink-600/20 hover:border-pink-500/50 
                          transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/20"
             >
               <TiktokIcon />
@@ -123,9 +123,9 @@ const Footer = () => {
               href="https://instagram.com/pemkabtangerang"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 
-                         hover:text-white hover:bg-gradient-to-br hover:from-purple-600/20 hover:to-pink-600/20 
-                         hover:border-pink-500/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/20"
+              className="p-2.5 bg-white shadow-sm border border-slate-200 rounded-xl text-slate-600 
+                         hover:text-slate-900 hover:bg-gradient-to-br hover:from-[#0057A4]/20 hover:to-[#0057A4]/20 
+                         hover:border-[#0057A4]/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#0057A4]/20"
             >
               <InstagramIcon />
             </a>
@@ -134,8 +134,8 @@ const Footer = () => {
               href="https://youtube.com/@pemkabtangerang"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 
-                         hover:text-white hover:bg-red-600/20 hover:border-red-500/50 
+              className="p-2.5 bg-white shadow-sm border border-slate-200 rounded-xl text-slate-600 
+                         hover:text-slate-900 hover:bg-red-600/20 hover:border-red-500/50 
                          transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-500/20"
             >
               <YoutubeIcon />
@@ -146,23 +146,23 @@ const Footer = () => {
         {/* Informasi */}
         <div className="flex flex-col gap-4">
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-1">
+            <h4 className="text-slate-900 font-semibold text-sm uppercase tracking-wider mb-1">
               Jam Operasional Pelayanan
             </h4>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">
               Senin - Jumat: 07.30 - 16.30 WIB
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-1">
+            <h4 className="text-slate-900 font-semibold text-sm uppercase tracking-wider mb-1">
               Website Resmi
             </h4>
             <a
               href="https://diskominfo.tangerangkab.go.id"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-purple-400 hover:text-purple-300 
+              className="inline-flex items-center gap-1.5 text-[#0057A4] hover:text-[#0057A4] 
                          transition-colors text-sm group"
             >
               diskominfo.tangerangkab.go.id
@@ -181,12 +181,12 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-white/5">
+      <div className="border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="text-slate-500 text-xs">
             © {new Date().getFullYear()} Dinas Komunikasi dan Informatika Kabupaten Tangerang. All rights reserved.
           </p>
-          <p className="text-slate-600 text-xs">
+          <p className="text-slate-500 text-xs">
             Built with React &amp; Tailwind CSS
           </p>
         </div>
