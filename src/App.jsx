@@ -1,27 +1,13 @@
-import { useState } from 'react'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import Home from './pages/Home'
+import { Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
 
-function App() {
-  /**
-   * domainFilter — string | null
-   * Dikirim dari Header (ketika dropdown Domain diklik)
-   * dan dikonsumsi oleh Home untuk mengaktifkan filter di section Domain.
-   */
-  const [domainFilter, setDomainFilter] = useState(null)
+const App = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header setDomainFilter={setDomainFilter} />
-
-      <main className="flex-1">
-        <Home domainFilter={domainFilter} setDomainFilter={setDomainFilter} />
-      </main>
-
-      <Footer />
-    </div>
-  )
-}
-
-export default App
+export default App;
