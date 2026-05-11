@@ -3,7 +3,6 @@ import { Hero } from "@/components/Hero";
 import { Tentang } from "@/components/Tentang";
 import { Indikator } from "@/components/Indikator";
 import { Implementasi } from "@/components/Implementasi";
-import { Katalog } from "@/components/Katalog";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
@@ -15,7 +14,6 @@ const Index = () => {
         <Tentang />
         <Indikator />
         <Implementasi />
-        <Katalog />
       </main>
       <div id="kontak"><Footer /></div>
     </div>

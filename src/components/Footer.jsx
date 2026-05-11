@@ -64,7 +64,7 @@ export const Footer = () => {
         <div className="space-y-3">
           <h4 className="font-bold text-primary">Tautan Cepat</h4>
           <ul className="space-y-2 text-sm">
-            {["Tentang SPBE", "Domain SPBE", "Implementasi", "Katalog Layanan", "Kebijakan Privasi"].map(l => (
+            {["Tentang SPBE", "Domain SPBE", "Implementasi", "Indikator SPBE", "Kebijakan Privasi"].map(l => (
               <li key={l}>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors hover:translate-x-1 inline-block">→ {l}</a>
               </li>
