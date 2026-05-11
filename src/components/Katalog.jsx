@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// This file has been intentionally emptied — Katalog feature removed.
-=======
 import { useState } from "react";
 import {
   LayoutGrid, Smartphone, Database, Server, FileStack, Users, ShieldCheck, Globe2,
@@ -132,4 +129,4 @@ export const Katalog = () => {
     </section>
   );
 };
->>>>>>> c5aac93 (perubahan)
+// This file has been intentionally emptied — Katalog feature removed.
