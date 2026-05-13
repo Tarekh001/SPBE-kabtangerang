@@ -1,0 +1,167 @@
+# ============================================================
+# Nginx Configuration — SPBE Kabupaten Tangerang
+# ============================================================
+# Konfigurasi production dengan security headers lengkap.
+# Termasuk: Cookie Security, Script Integrity, API Proxy.
+# Sesuaikan server_name, ssl_certificate, dan root path.
+# ============================================================
+
+server {
+    listen 80;
+    server_name spbe.tangerangkab.go.id;
+
+    # Redirect semua HTTP ke HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name spbe.tangerangkab.go.id;
+
+    # ── SSL Configuration ──
+    ssl_certificate     /etc/ssl/certs/spbe.tangerangkab.go.id.crt;
+    ssl_certificate_key /etc/ssl/private/spbe.tangerangkab.go.id.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # ── SSL Session Caching ──
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # ── Document Root (Vite build output) ──
+    root /var/www/spbe/dist;
+    index index.html;
+
+    # ══════════════════════════════════════════
+    # SECURITY HEADERS
+    # ══════════════════════════════════════════
+
+    # [1] Content Security Policy (CSP)
+    # Membatasi sumber resource yang boleh dimuat oleh browser.
+    # Mencegah XSS, data injection, dan clickjacking.
+    add_header Content-Security-Policy "
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self' https://dev.tangerangkab.my.id;
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+        object-src 'none';
+        upgrade-insecure-requests;
+    " always;
+
+    # [2] X-Frame-Options — Anti-clickjacking
+    add_header X-Frame-Options "DENY" always;
+
+    # [3] X-Content-Type-Options — Anti-MIME sniffing
+    add_header X-Content-Type-Options "nosniff" always;
+
+    # [4] Referrer-Policy — Kontrol info referrer
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # [5] Strict-Transport-Security (HSTS) — Force HTTPS 1 tahun
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    # [6] Permissions-Policy — Disable fitur browser yang tidak diperlukan
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" always;
+
+    # [7] X-XSS-Protection (legacy fallback)
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # [8] Cross-Origin Policies — Isolasi antar origin
+    add_header Cross-Origin-Opener-Policy "same-origin" always;
+    add_header Cross-Origin-Resource-Policy "same-origin" always;
+    add_header Cross-Origin-Embedder-Policy "require-corp" always;
+
+    # ══════════════════════════════════════════
+    # COOKIE SECURITY (Server-side enforcement)
+    # ══════════════════════════════════════════
+    #
+    # Cookie auth HARUS di-set oleh backend dengan flags:
+    #
+    #   Set-Cookie: session_id=abc123;
+    #       HttpOnly;          ← JS tidak bisa baca (anti-XSS cookie theft)
+    #       Secure;            ← Hanya dikirim via HTTPS
+    #       SameSite=Strict;   ← Anti-CSRF
+    #       Path=/;
+    #       Max-Age=3600;      ← Expire 1 jam
+    #       Domain=.tangerangkab.go.id;
+    #
+    # Nginx bisa menambahkan/memodifikasi flags pada cookie dari backend:
+
+    # Pastikan semua cookie dari upstream/backend mendapat flag Secure & HttpOnly
+    proxy_cookie_flags ~ HttpOnly Secure SameSite=Strict;
+
+    # ══════════════════════════════════════════
+    # API REVERSE PROXY (Cookie-aware)
+    # ══════════════════════════════════════════
+    # Proxy API requests ke backend agar cookie same-origin
+    # dan frontend tidak perlu expose URL backend langsung.
+
+    location /api/ {
+        proxy_pass https://dev.tangerangkab.my.id/smartcity-api/api/;
+
+        # Forward headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Cookie security pada proxy response
+        proxy_cookie_path / "/; HttpOnly; Secure; SameSite=Strict";
+
+        # Timeout settings
+        proxy_connect_timeout 10s;
+        proxy_send_timeout    30s;
+        proxy_read_timeout    30s;
+
+        # Rate limiting (anti brute-force)
+        # Requires: limit_req_zone $binary_remote_addr zone=api:10m rate=30r/m;
+        # limit_req zone=api burst=10 nodelay;
+    }
+
+    # ══════════════════════════════════════════
+    # SPA ROUTING & CACHING
+    # ══════════════════════════════════════════
+
+    # SPA fallback — semua route diarahkan ke index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets (JS, CSS, images) — 1 tahun
+    # Hash-based filenames memastikan cache invalidation otomatis
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Jangan cache index.html (agar update langsung terlihat)
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+    }
+
+    # Blokir akses ke file sensitif (.env, .git, dll)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Blokir akses ke source map di production
+    location ~* \.map$ {
+        deny all;
+    }
+
+    # Custom error pages
+    error_page 404 /index.html;
+    error_page 500 502 503 504 /50x.html;
+}
+

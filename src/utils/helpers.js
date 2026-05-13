@@ -31,48 +31,39 @@ export const KEBIJAKAN_ICONS = {
   keputusan: '📜'
 };
 
+import { secureFetch } from '@/lib/api';
+import logger from '@/lib/logger';
+
 /**
  * Fungsi untuk mengambil data Kebijakan SPBE berdasarkan kategorinya.
- * Menggunakan native fetch (tanpa axios).
+ * Menggunakan secure fetch wrapper dengan timeout, retry, dan validasi.
  *
  * @param {string} type - Harus bernilai antara: "presiden", "mentri", "pedoman", "walikota", "keputusan"
  * @returns {Promise<Array>} Data kebijakan
  */
 export const fetchKebijakan = async (type) => {
+  // 1. Validasi parameter tipe kategori kebijakan
+  if (!KEBIJAKAN_ENDPOINTS[type]) {
+    throw new Error(`Kategori kebijakan tidak valid: ${type}`);
+  }
+
   try {
-    // 1. Validasi parameter tipe kategori kebijakan
-    if (!KEBIJAKAN_ENDPOINTS[type]) {
-      throw new Error(`Kategori kebijakan tidak valid: ${type}`);
-    }
-
-    // 2. Mengambil base URL dari environment variable (Vite environment)
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    if (!baseUrl) {
-      console.warn("Peringatan: VITE_API_BASE_URL kosong atau belum ter-load dari .env");
-    }
-
-    // Pembersihan Base URL: Hapus karakter '/' di belakang URL
-    const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     const endpoint = KEBIJAKAN_ENDPOINTS[type];
 
-    // 3. Merakit full koneksi URL Endpoint
-    const fullUrl = `${cleanBaseUrl}${endpoint}`;
+    // 2. Memanggil API menggunakan secure fetch wrapper
+    //    (timeout, retry, validasi JSON sudah built-in)
+    const data = await secureFetch(endpoint, {
+      method: 'GET',
+      timeout: 10000, // 10 detik timeout per request
+      retries: 1,     // 1x retry jika gagal
+    });
 
-    // 4. Memanggil API menggunakan native fetch
-    const response = await fetch(fullUrl);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // 5. Mengembalikan data JSON
-    const data = await response.json();
     return data;
   } catch (error) {
-    // 6. Penanganan error global API
-    console.error(`[fetchKebijakan] Gagal mengambil data untuk kategori "${type}":`, error.message);
+    // 3. Penanganan error — hanya log di development
+    logger.error(`fetchKebijakan(${type})`, error);
 
-    // Error dilemparkan kembali agar frontend bisa merespon dengan UI Alert/Feedback khusus
+    // Error dilemparkan kembali agar frontend bisa merespon dengan UI feedback
     throw error;
   }
 };
@@ -110,3 +101,4 @@ export const fetchAllRegulasi = async () => {
 
   return regulasi;
 };
+

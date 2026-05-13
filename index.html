@@ -4,9 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ══ Security Headers (Development Fallback) ══ -->
+    <!-- Di production, gunakan nginx.conf.example untuk header server-side -->
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self' https://dev.tangerangkab.my.id;
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+        object-src 'none';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- ══ Fonts ══ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- ══ SEO Meta Tags ══ -->
     <title>SPBE Kabupaten Tangerang - Portal Resmi Sistem Pemerintahan Berbasis Elektronik</title>
     <meta name="description" content="Portal resmi SPBE Kabupaten Tangerang - Indeks, indikator, dan implementasi Sistem Pemerintahan Berbasis Elektronik untuk layanan publik yang transparan." />
     <meta name="author" content="Diskominfo Kabupaten Tangerang" />
@@ -17,15 +38,8 @@
 
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Dark mode flash prevention -->
-    <script>
-      (function() {
-        var t = localStorage.getItem('spbe-theme');
-        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
+    <!-- Dark mode flash prevention — external script untuk CSP compliance -->
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
