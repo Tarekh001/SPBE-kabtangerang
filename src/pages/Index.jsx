@@ -5,6 +5,8 @@ import { Tentang } from "@/components/Tentang";
 import { Indikator } from "@/components/Indikator";
 import { Implementasi } from "@/components/Implementasi";
 import { Footer } from "@/components/Footer";
+import { ContactForm } from "@/components/ContactForm";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const Index = () => {
   return (
@@ -15,8 +17,10 @@ const Index = () => {
         <Tentang />
         <Indikator />
         <Implementasi />
+        <ContactForm />
       </main>
       <div id="kontak"><Footer /></div>
+      <ScrollToTop />
     </div>
   );
 };
