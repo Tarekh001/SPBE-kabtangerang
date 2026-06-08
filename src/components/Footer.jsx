@@ -76,17 +76,19 @@ export const Footer = () => {
           </a>
 
           <h4 className="font-bold text-primary pt-2">Unduh Tangerang Gemilang</h4>
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-3">
             <a
               href="https://play.google.com/store/apps/details?id=id.go.tangerangkab.tangeranggemilang"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover-lift transition-all"
+              className="transition-all hover:scale-105"
+              style={{ background: "none", boxShadow: "none" }}
             >
               <img
                 src={googlePlayBadge}
                 alt="GET IT ON Google Play"
-                className="h-[75px] w-auto object-contain"
+                className="w-[180px] h-auto"
+                style={{ mixBlendMode: "multiply", display: "block" }}
                 loading="lazy"
               />
             </a>
@@ -95,12 +97,14 @@ export const Footer = () => {
               href="https://apps.apple.com/id/app/tangerang-gemilang/id1483155498"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover-lift transition-all"
+              className="transition-all hover:scale-105"
+              style={{ background: "none", boxShadow: "none" }}
             >
               <img
                 src={appStoreBadge}
                 alt="Download on the App Store"
-                className="h-[75px] w-auto object-contain"
+                className="w-[180px] h-auto"
+                style={{ mixBlendMode: "multiply", display: "block" }}
                 loading="lazy"
               />
             </a>
