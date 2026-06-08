@@ -29,7 +29,7 @@ export const Hero = () => {
               {[
                 { v: "3.85", l: "Indeks SPBE" },
                 { v: "47", l: "OPD Terintegrasi" },
-                { v: "100+", l: "Layanan Digital" },
+                { v: "17", l: "Layanan Digital" },
               ].map((s) => (
                 <div key={s.l} className="text-center">
                   <div className="text-2xl lg:text-3xl font-extrabold text-accent">{s.v}</div>

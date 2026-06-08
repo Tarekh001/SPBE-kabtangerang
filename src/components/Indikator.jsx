@@ -71,19 +71,24 @@ export const Indikator = () => {
         </div>
 
         <div className="bg-card rounded-2xl p-5 shadow-soft mb-6 space-y-4">
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Baris 1: Label Filter Domain */}
+          <div>
             <button className="pill gradient-primary text-primary-foreground inline-flex items-center gap-2">
               <Filter className="w-4 h-4" /> Filter Domain
             </button>
+          </div>
+
+          {/* Baris 2: Domain category pills — horizontal, left aligned */}
+          <div className="flex items-center justify-start gap-3 flex-wrap">
             {domains.map((d) => (
               <button
                 key={d}
                 ref={(el) => { domainRefs.current[d] = el; }}
                 onClick={() => handleDomainChange(d)}
-                className={`pill border transition-all ${
+                className={`pill border-2 transition-all ${
                   activeDomain === d
                     ? "gradient-primary text-primary-foreground border-transparent shadow-soft"
-                    : "bg-background text-foreground border-border hover:border-primary hover:text-primary"
+                    : "bg-white text-primary border-primary hover:bg-primary/5"
                 } ${highlightedDomain === d ? "animate-highlight-pulse ring-2 ring-accent ring-offset-2" : ""}`}
               >
                 {d}

@@ -94,52 +94,67 @@ export const Tentang = () => {
               </div>
             )}
 
-            {!loading && !error && regulasi && (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {kategoriOrder.map((key) => {
-                  const item = regulasi[key];
-                  const label = KEBIJAKAN_LABELS[key];
-                  const icon = KEBIJAKAN_ICONS[key];
-                  const count = item?.data?.length || 0;
+            {!loading && !error && regulasi && (() => {
+              const renderCard = (key) => {
+                const item = regulasi[key];
+                const label = KEBIJAKAN_LABELS[key];
+                const icon = KEBIJAKAN_ICONS[key];
+                const count = item?.data?.length || 0;
 
-                  return (
-                    <div
-                      key={key}
-                      className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15 hover:bg-white/20 transition-all duration-300 group"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl shrink-0">{icon}</span>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-semibold text-sm text-accent">{label}</h4>
-                          <p className="text-xs opacity-70 mt-0.5">
-                            {item?.status === 'error'
-                              ? 'Data tidak tersedia'
-                              : `${count} regulasi`
-                            }
-                          </p>
+                return (
+                  <div
+                    key={key}
+                    className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15 hover:bg-white/20 transition-all duration-300 group"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl shrink-0">{icon}</span>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-sm text-accent">{label}</h4>
+                        <p className="text-xs opacity-70 mt-0.5">
+                          {item?.status === 'error'
+                            ? 'Data tidak tersedia'
+                            : `${count} regulasi`
+                          }
+                        </p>
 
-                          {item?.status === 'success' && count > 0 && (
-                            <ul className="mt-2 space-y-1">
-                              {item.data.slice(0, 3).map((reg, idx) => (
-                                <li key={idx} className="text-xs opacity-80 truncate flex items-start gap-1">
-                                  <span className="text-accent mt-0.5 shrink-0">•</span>
-                                  <span className="truncate">{reg.judul || reg.nama || reg.title || `Regulasi ${idx + 1}`}</span>
-                                </li>
-                              ))}
-                              {count > 3 && (
-                                <li className="text-xs text-accent font-medium">
-                                  +{count - 3} lainnya
-                                </li>
-                              )}
-                            </ul>
-                          )}
-                        </div>
+                        {item?.status === 'success' && count > 0 && (
+                          <ul className="mt-2 space-y-1">
+                            {item.data.slice(0, 3).map((reg, idx) => (
+                              <li key={idx} className="text-xs opacity-80 truncate flex items-start gap-1">
+                                <span className="text-accent mt-0.5 shrink-0">•</span>
+                                <span className="truncate">{reg.judul || reg.nama || reg.title || `Regulasi ${idx + 1}`}</span>
+                              </li>
+                            ))}
+                            {count > 3 && (
+                              <li className="text-xs text-accent font-medium">
+                                +{count - 3} lainnya
+                              </li>
+                            )}
+                          </ul>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  </div>
+                );
+              };
+
+              return (
+                <div className="flex flex-col gap-4">
+                  {/* Baris 1: Peraturan Presiden, Peraturan Menteri, Pedoman Menteri */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {kategoriOrder.slice(0, 3).map(renderCard)}
+                  </div>
+                  {/* Baris 2: Peraturan Walikota, Keputusan Walikota — centered */}
+                  <div className="flex justify-center gap-4 flex-wrap">
+                    {kategoriOrder.slice(3).map((key) => (
+                      <div key={key} className="w-full sm:w-[calc(33.333%-0.67rem)]">
+                        {renderCard(key)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>

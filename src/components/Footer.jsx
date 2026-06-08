@@ -1,4 +1,6 @@
 import logo from "@/assets/logo-smartcity.svg";
+import googlePlayBadge from "@/assets/google-play-badge.png";
+import appStoreBadge from "@/assets/app-store-badge.png";
 import { MapPin, Phone, Mail, Clock, Globe } from "lucide-react";
 
 /* Inline SVG social icons — lucide-react v1.x removed brand icons */
@@ -65,8 +67,8 @@ export const Footer = () => {
         {/* ── Bagian Kanan: Jam Operasional + Website + Download ── */}
         <div className="space-y-3">
           <h4 className="font-bold text-primary">Jam Operasional Pelayanan</h4>
-          <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-primary" /> Senin – Jumat</p>
-          <p className="text-sm text-muted-foreground ml-6">07.30 – 16.00 WIB</p>
+          <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-primary" /> Senin - Jumat</p>
+          <p className="text-sm text-muted-foreground ml-6">07.30 - 16.00 WIB</p>
 
           <h4 className="font-bold text-primary pt-2">Website Resmi</h4>
           <a href="https://tangerangkab.go.id" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-2">
@@ -74,28 +76,38 @@ export const Footer = () => {
           </a>
 
           <h4 className="font-bold text-primary pt-2">Unduh Tangerang Gemilang</h4>
-          <div className="space-y-2">
-            <a href="#" className="flex items-center gap-2 bg-foreground text-background rounded-xl px-4 py-2.5 hover-lift">
-              <span className="text-2xl">▶</span>
-              <div>
-                <div className="text-[10px] opacity-70">GET IT ON</div>
-                <div className="font-bold text-sm">Google Play</div>
-              </div>
+          <div className="flex items-center gap-2 pt-2">
+            <a
+              href="https://play.google.com/store/apps/details?id=id.go.tangerangkab.tangeranggemilang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover-lift transition-all"
+            >
+              <img
+                src={googlePlayBadge}
+                alt="GET IT ON Google Play"
+                className="h-[75px] w-auto object-contain"
+                loading="lazy"
+              />
             </a>
-            <a href="#" className="flex items-center gap-2 bg-foreground text-background rounded-xl px-4 py-2.5 hover-lift">
-              <span className="text-2xl"></span>
-              <div>
-                <div className="text-[10px] opacity-70">Download on the</div>
-                <div className="font-bold text-sm">App Store</div>
-              </div>
+
+            <a
+              href="https://apps.apple.com/id/app/tangerang-gemilang/id1483155498"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover-lift transition-all"
+            >
+              <img
+                src={appStoreBadge}
+                alt="Download on the App Store"
+                className="h-[75px] w-auto object-contain"
+                loading="lazy"
+              />
             </a>
           </div>
         </div>
       </div>
 
-      <div className="container mt-12 pt-6 border-t border-border text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} SPBE Kabupaten Tangerang. All rights reserved. Powered by <span className="text-primary font-semibold">Diskominfo Tangerang</span>.
-      </div>
     </footer>
   );
 };
