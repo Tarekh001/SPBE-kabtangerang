@@ -13,13 +13,13 @@ export const Hero = () => {
           <div className="space-y-4 animate-fade-in-up">
             <span className="inline-flex items-center gap-2 pill bg-white/15 backdrop-blur text-primary-foreground border border-white/20">
               <Sparkles className="w-4 h-4 text-accent" />
-              Sistem Pemerintahan Berbasis Elektronik
+              Pemerintahan Digital
             </span>
             <h1 className="text-3xl lg:text-5xl font-extrabold leading-tight">
               Selamat Datang di <br />
               <span className="text-accent">Kabupaten Tangerang</span>
               <br />
-              <span className="text-xl lg:text-2xl font-semibold opacity-90">SPBE Portal Resmi</span>
+              <span className="text-xl lg:text-2xl font-semibold opacity-90">Pemerintahan Digital</span>
             </h1>
             <p className="text-base opacity-90 max-w-xl">
               Mewujudkan tata kelola pemerintahan yang bersih, efektif, transparan, dan akuntabel melalui transformasi digital.
