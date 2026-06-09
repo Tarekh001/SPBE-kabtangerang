@@ -1,4 +1,5 @@
-import logo from "@/assets/logo-smartcity.svg";
+import logo from "@/assets/logo_SPBE.png";
+import logoSmartcity from "@/assets/logo-smartcity.svg";
 import googlePlayBadge from "@/assets/google-play-badge.png";
 import appStoreBadge from "@/assets/app-store-badge.png";
 import { MapPin, Phone, Mail, Clock, Globe } from "lucide-react";
@@ -35,12 +36,31 @@ export const Footer = () => {
 
         {/* ── Bagian Kiri: Logo + Alamat + Kontak ── */}
         <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Tangerang Smart City" loading="lazy" width={64} height={64} className="w-16 h-16 object-contain" />
-            <div>
-              <div className="font-display font-extrabold text-primary text-lg">SPBE</div>
-              <div className="text-xs text-muted-foreground">Kab. Tangerang</div>
+          <div className="flex flex-wrap items-center gap-0">
+            <div className="relative w-16 h-16 shrink-0 -mr-2">
+              <img 
+                src={logo} 
+                alt="Logo SPBE" 
+                loading="lazy" 
+                width={64} 
+                height={64} 
+                className="w-16 h-16 object-contain" 
+                style={{ filter: "url(#color-primary-filter)" }}
+              />
+              <svg width="0" height="0" className="absolute">
+                <filter id="color-primary-filter">
+                  <feFlood floodColor="var(--color-primary)" result="flood" />
+                  <feComposite in="flood" in2="SourceAlpha" operator="in" />
+                </filter>
+              </svg>
             </div>
+            <div className="hidden sm:block h-8 w-px bg-primary/20 mx-1 relative z-10"></div>
+            <img 
+              src={logoSmartcity} 
+              alt="Tangerang Smart City" 
+              loading="lazy" 
+              className="h-12 w-auto object-contain" 
+            />
           </div>
           <h4 className="font-bold text-primary">Alamat</h4>
           <p className="text-sm text-muted-foreground flex gap-2">
@@ -81,14 +101,12 @@ export const Footer = () => {
               href="https://play.google.com/store/apps/details?id=id.go.tangerangkab.tangeranggemilang"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-all hover:scale-105"
-              style={{ background: "none", boxShadow: "none" }}
+              className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"
             >
               <img
                 src={googlePlayBadge}
                 alt="GET IT ON Google Play"
-                className="w-[180px] h-auto"
-                style={{ mixBlendMode: "multiply", display: "block" }}
+                className="w-[150px] h-auto block"
                 loading="lazy"
               />
             </a>
@@ -97,14 +115,12 @@ export const Footer = () => {
               href="https://apps.apple.com/id/app/tangerang-gemilang/id1483155498"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-all hover:scale-105"
-              style={{ background: "none", boxShadow: "none" }}
+              className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"
             >
               <img
                 src={appStoreBadge}
                 alt="Download on the App Store"
-                className="w-[180px] h-auto"
-                style={{ mixBlendMode: "multiply", display: "block" }}
+                className="w-[150px] h-auto block"
                 loading="lazy"
               />
             </a>
