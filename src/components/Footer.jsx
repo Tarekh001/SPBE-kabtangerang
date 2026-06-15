@@ -24,9 +24,9 @@ const YoutubeIcon = (props) => (
 );
 
 const socialLinks = [
-  { Icon: TikTokIcon, label: "TikTok", href: "#" },
-  { Icon: InstagramIcon, label: "Instagram", href: "#" },
-  { Icon: YoutubeIcon, label: "YouTube", href: "#" },
+  { Icon: TikTokIcon, label: "TikTok", href: "https://www.tiktok.com/@pemkabtangerang" },
+  { Icon: InstagramIcon, label: "Instagram", href: "https://instagram.com/pemkabtangerang" },
+  { Icon: YoutubeIcon, label: "YouTube", href: "https://youtube.com/@pemkabtangerang" },
 ];
 
 export const Footer = () => {
@@ -77,7 +77,7 @@ export const Footer = () => {
           <h4 className="font-bold text-primary text-center">Temukan kami di sosial media</h4>
           <div className="flex gap-3">
             {socialLinks.map(({ Icon, label, href }) => (
-              <a key={label} href={href} aria-label={label} className="w-11 h-11 rounded-xl gradient-primary text-primary-foreground grid place-items-center hover-lift hover:rotate-6 transition-all" title={label}>
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-11 h-11 rounded-xl gradient-primary text-primary-foreground grid place-items-center hover-lift hover:rotate-6 transition-all" title={label}>
                 <Icon className="w-5 h-5" />
               </a>
             ))}
@@ -98,7 +98,7 @@ export const Footer = () => {
           <h4 className="font-bold text-primary pt-2">Unduh Tangerang Gemilang</h4>
           <div className="flex items-center gap-3">
             <a
-              href="https://play.google.com/store/apps/details?id=id.go.tangerangkab.tangeranggemilang"
+              href="https://play.google.com/store/apps/details?id=go.id.tangerangkab.gemilang"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"
@@ -112,7 +112,7 @@ export const Footer = () => {
             </a>
 
             <a
-              href="https://apps.apple.com/id/app/tangerang-gemilang/id1483155498"
+              href="https://apps.apple.com/id/app/tangerang-gemilang/id1642259427"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"

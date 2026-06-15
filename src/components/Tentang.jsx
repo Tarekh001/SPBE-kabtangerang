@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import gedung from "@/assets/gedung.jpg";
+import gedung from "@/assets/image.png";
 import { Info, BookOpen, Loader2, AlertCircle, FileText, ExternalLink, ChevronDown, Eye } from "lucide-react";
 import { fetchAllRegulasi, KEBIJAKAN_LABELS, KEBIJAKAN_ICONS } from "@/utils/helpers";
 
@@ -169,7 +169,7 @@ export const Tentang = () => {
                 : [];
 
               // Placeholder cards saat data kosong
-              const placeholderCards = [1, 2, 3];
+              const placeholderCards = [1, 2, 3, 4];
 
               return (
                 <div className="flex flex-col gap-4">
@@ -218,40 +218,39 @@ export const Tentang = () => {
                       </div>
 
                       {/* Grid of PDF Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-w-5xl mx-auto justify-items-center">
                         {filteredRegulations.length > 0
                           ? filteredRegulations.map((reg, idx) => (
                               <div
                                 key={reg.id || idx}
-                                className="group relative bg-white rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col h-[340px]"
+                                className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col h-[180px] w-full max-w-[240px]"
                                 style={{ animationDelay: `${idx * 80}ms`, animationFillMode: 'both' }}
                               >
                                 {/* Aksen gradient atas */}
-                                <div className="h-1.5 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="h-1 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                                 {/* PDF Thumbnail Placeholder */}
-                                <div className="relative mx-5 mt-5 aspect-[3/4] max-h-48 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
+                                <div className="relative mx-2.5 mt-2.5 aspect-[4/3] max-h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
                                   {reg.thumbnail ? (
                                     <img
                                       src={reg.thumbnail}
                                       alt={`Preview ${reg.title || reg.judul || ''}`}
-                                      className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500"
+                                      className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
                                       loading="lazy"
                                     />
                                   ) : (
                                     <>
                                       {/* Dekorasi background garis */}
                                       <div className="absolute inset-0 opacity-[0.03]">
-                                        <div className="absolute top-4 left-4 right-4 h-2 bg-slate-400 rounded" />
-                                        <div className="absolute top-9 left-4 right-8 h-2 bg-slate-400 rounded" />
-                                        <div className="absolute top-14 left-4 right-12 h-2 bg-slate-400 rounded" />
-                                        <div className="absolute top-19 left-4 right-6 h-2 bg-slate-400 rounded" />
-                                        <div className="absolute top-24 left-4 right-16 h-2 bg-slate-400 rounded" />
+                                        <div className="absolute top-2 left-2 right-2 h-[2px] bg-slate-400 rounded" />
+                                        <div className="absolute top-4 left-2 right-5 h-[2px] bg-slate-400 rounded" />
+                                        <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
+                                        <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
                                       </div>
-                                      <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
-                                        <FileText className="w-7 h-7 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
+                                      <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
+                                        <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
                                       </div>
-                                      <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-2.5 py-1 rounded-full border border-slate-200/50">
+                                      <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
                                         PDF
                                       </span>
                                     </>
@@ -259,8 +258,8 @@ export const Tentang = () => {
                                 </div>
 
                                 {/* Card Body */}
-                                <div className="px-5 pt-3 pb-5 flex-1 flex flex-col justify-between">
-                                  <h5 className="font-semibold text-sm text-slate-800 line-clamp-2 group-hover:text-[#0057A4] transition-colors duration-300">
+                                <div className="px-2.5 pt-1.5 pb-2.5 flex-1 flex flex-col justify-between">
+                                  <h5 className="font-semibold text-[11px] text-slate-800 line-clamp-2 group-hover:text-[#0057A4] transition-colors duration-300 leading-tight">
                                     {reg.judul || reg.nama || reg.title || `Dokumen Regulasi ${idx + 1}`}
                                   </h5>
                                   <a
@@ -272,7 +271,7 @@ export const Tentang = () => {
                                         e.preventDefault();
                                       }
                                     }}
-                                    className="mt-3 inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0057A4] to-[#0070CC] text-white text-xs font-semibold hover:shadow-lg hover:shadow-[#0057A4]/25 transition-all duration-300"
+                                    className="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 rounded-md bg-gradient-to-r from-[#0057A4] to-[#0070CC] text-white text-[9px] font-semibold hover:shadow-md hover:shadow-[#0057A4]/25 transition-all duration-300"
                                   >
                                     <Eye className="w-4 h-4" />
                                     Lihat PDF
@@ -284,36 +283,35 @@ export const Tentang = () => {
                             placeholderCards.map((_, idx) => (
                               <div
                                 key={`placeholder-${idx}`}
-                                className="group relative bg-white rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col h-[340px]"
+                                className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col h-[180px] w-full max-w-[240px]"
                                 style={{ animationDelay: `${idx * 80}ms`, animationFillMode: 'both' }}
                               >
                                 {/* Aksen gradient atas */}
-                                <div className="h-1.5 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="h-1 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                                 {/* PDF Thumbnail Placeholder */}
-                                <div className="relative mx-5 mt-5 aspect-[3/4] max-h-48 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
+                                <div className="relative mx-2.5 mt-2.5 aspect-[4/3] max-h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
                                   <div className="absolute inset-0 opacity-[0.03]">
-                                    <div className="absolute top-4 left-4 right-4 h-2 bg-slate-400 rounded" />
-                                    <div className="absolute top-9 left-4 right-8 h-2 bg-slate-400 rounded" />
-                                    <div className="absolute top-14 left-4 right-12 h-2 bg-slate-400 rounded" />
-                                    <div className="absolute top-19 left-4 right-6 h-2 bg-slate-400 rounded" />
-                                    <div className="absolute top-24 left-4 right-16 h-2 bg-slate-400 rounded" />
+                                    <div className="absolute top-2 left-2 right-2 h-[2px] bg-slate-400 rounded" />
+                                    <div className="absolute top-4 left-2 right-5 h-[2px] bg-slate-400 rounded" />
+                                    <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
+                                    <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
                                   </div>
-                                  <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
-                                    <FileText className="w-7 h-7 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
+                                  <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
+                                    <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
                                   </div>
-                                  <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-2.5 py-1 rounded-full border border-slate-200/50">
+                                  <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
                                     PDF
                                   </span>
                                 </div>
 
                                 {/* Card Body Placeholder */}
-                                <div className="px-5 pt-3 pb-5 flex-1 flex flex-col justify-between">
-                                  <div className="space-y-2">
-                                    <div className="h-3 bg-slate-200 rounded-full w-3/4 animate-pulse" />
-                                    <div className="h-3 bg-slate-200 rounded-full w-1/2 animate-pulse" />
+                                <div className="px-2.5 pt-1.5 pb-2.5 flex-1 flex flex-col justify-between">
+                                  <div className="space-y-1">
+                                    <div className="h-2 bg-slate-200 rounded-full w-3/4 animate-pulse" />
+                                    <div className="h-2 bg-slate-200 rounded-full w-1/2 animate-pulse" />
                                   </div>
-                                  <div className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs font-semibold cursor-not-allowed">
+                                  <div className="mt-1.5 flex items-center justify-center gap-1 w-full py-1 rounded-md bg-slate-200 text-slate-400 text-[9px] font-semibold cursor-not-allowed">
                                     <Eye className="w-4 h-4" />
                                     Lihat PDF
                                   </div>

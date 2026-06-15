@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Calendar, Award } from "lucide-react";
-import gedungImg from "@/assets/gedung.jpg";
+import gedungImg from "@/assets/image.png";
 import baruImg from "@/assets/baru.jpg";
 
 const initialData = {
