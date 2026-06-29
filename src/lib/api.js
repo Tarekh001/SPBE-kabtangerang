@@ -23,17 +23,12 @@ const MAX_RETRIES = 2;
 const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
 
 /**
- * Mendapatkan base URL API dari environment variable secara aman.
- * Menghapus trailing slash untuk konsistensi.
- * @returns {string} Base URL yang sudah dibersihkan
+ * Mendapatkan base path API.
+ * Menggunakan path relatif /api/v1 agar di-dev lewat Vite proxy (bypass CORS),
+ * dan di-production di-handle oleh reverse proxy (nginx/dll).
+ * @returns {string} Base path API
  */
-const getBaseUrl = () => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-  if (!baseUrl) {
-    logger.warn('VITE_API_BASE_URL belum dikonfigurasi');
-  }
-  return baseUrl.replace(/\/+$/, '');
-};
+const getBaseUrl = () => '/api/v1';
 
 /**
  * Validasi apakah response memiliki content-type JSON

@@ -27,8 +27,8 @@ export const Hero = () => {
 
             <div className="grid grid-cols-3 gap-4 pt-4 max-w-lg">
               {[
-                { v: "3.85", l: "Indeks SPBE" },
-                { v: "47", l: "OPD Terintegrasi" },
+                { v: "3.91", l: "Indeks SPBE" },
+                { v: "34", l: "OPD Terintegrasi" },
                 { v: "17", l: "Layanan Digital" },
               ].map((s) => (
                 <div key={s.l} className="text-center">

@@ -55,12 +55,14 @@ export const Footer = () => {
               </svg>
             </div>
             <div className="hidden sm:block h-8 w-px bg-primary/20 mx-1 relative z-10"></div>
-            <img 
-              src={logoSmartcity} 
-              alt="Tangerang Smart City" 
-              loading="lazy" 
-              className="h-12 w-auto object-contain" 
-            />
+            <a href="https://dev.tangerangkab.my.id/smartcity-landing/" target="_blank" rel="noopener noreferrer" className="shrink-0 transition-transform hover:scale-105">
+              <img 
+                src={logoSmartcity} 
+                alt="Tangerang Smart City" 
+                loading="lazy" 
+                className="h-12 w-auto object-contain" 
+              />
+            </a>
           </div>
           <h4 className="font-bold text-primary">Alamat</h4>
           <p className="text-sm text-muted-foreground flex gap-2">
@@ -69,7 +71,7 @@ export const Footer = () => {
           </p>
           <h4 className="font-bold text-primary pt-2">Kontak</h4>
           <p className="text-sm text-muted-foreground flex items-center gap-2"><Phone className="w-4 h-4 text-primary" /> (021) 5990240</p>
-          <p className="text-sm text-muted-foreground flex items-center gap-2"><Mail className="w-4 h-4 text-primary" /> diskominfo@tangerangkab.go.id</p>
+          <p className="text-sm text-muted-foreground flex items-center gap-2"><Mail className="w-4 h-4 text-primary" /> helpdesk@tangerangkab.go.id</p>
         </div>
 
         {/* ── Bagian Tengah: Sosial Media ── */}

@@ -1,18 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import gedung from "@/assets/image.png";
-import { Info, BookOpen, Loader2, AlertCircle, FileText, ExternalLink, ChevronDown, Eye } from "lucide-react";
-import { fetchAllRegulasi, KEBIJAKAN_LABELS, KEBIJAKAN_ICONS } from "@/utils/helpers";
+import { Info, BookOpen, Loader2, AlertCircle, FileText, ChevronDown, Eye } from "lucide-react";
+import { fetchRegulasiList, fetchCategoryRegulasi, getFileUrl } from "@/utils/helpers";
+
+/** Ikon default yang dirotasi berdasarkan index kategori */
+const CATEGORY_ICONS = ['🏛️', '📋', '📘', '🏢', '📜', '📄', '⚖️', '📑'];
 
 export const Tentang = () => {
-  const [regulasi, setRegulasi] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [regulasiList, setRegulasiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const cardGridRef = useRef(null);
 
   // Toggle kategori aktif — klik lagi untuk menutup
-  const handleCategoryClick = (key) => {
-    setActiveCategory((prev) => (prev === key ? null : key));
+  const handleCategoryClick = (categoryId) => {
+    setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
   };
 
   // Scroll ke card grid saat kategori dipilih
@@ -22,16 +26,30 @@ export const Tentang = () => {
     }
   }, [activeCategory]);
 
+  // Load data dari API — gunakan Promise.allSettled agar satu kegagalan tidak memblokir yang lain
   useEffect(() => {
     let cancelled = false;
 
-    const loadRegulasi = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchAllRegulasi();
+        const [catResult, regResult] = await Promise.allSettled([
+          fetchCategoryRegulasi(),
+          fetchRegulasiList(),
+        ]);
+
         if (!cancelled) {
-          setRegulasi(data);
+          const cats = catResult.status === 'fulfilled' ? catResult.value : [];
+          const regs = regResult.status === 'fulfilled' ? regResult.value : [];
+
+          setCategories(cats);
+          setRegulasiList(regs);
+
+          // Tampilkan error parsial jika salah satu gagal
+          if (catResult.status === 'rejected' && regResult.status === 'rejected') {
+            setError("Gagal memuat data regulasi. Silakan coba lagi nanti.");
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -44,11 +62,17 @@ export const Tentang = () => {
       }
     };
 
-    loadRegulasi();
+    loadData();
     return () => { cancelled = true; };
   }, []);
 
-  const kategoriOrder = ['presiden', 'mentri', 'pedoman', 'walikota', 'keputusan'];
+  // Filter regulasi berdasarkan kategori aktif
+  const filteredRegulations = activeCategory
+    ? regulasiList.filter((r) => r.categoryRegulasiId === activeCategory)
+    : [];
+
+  // Ambil nama kategori aktif
+  const activeCategoryData = categories.find((c) => c.id === activeCategory);
 
   return (
     <>
@@ -58,7 +82,7 @@ export const Tentang = () => {
           <span className="pill bg-secondary text-primary inline-flex items-center gap-2 mb-2">
             <Info className="w-4 h-4" /> Tentang Kami
           </span>
-          <h2 className="text-3xl lg:text-4xl font-extrabold text-gradient">TENTANG SPBE</h2>
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-gradient">TENTANG PEMERINTAHAN DIGITAL</h2>
         </div>
 
         <div className="gradient-hero rounded-[2rem] p-6 lg:p-10 shadow-elegant text-primary-foreground relative overflow-hidden hover-lift transition-all duration-500">
@@ -77,22 +101,22 @@ export const Tentang = () => {
               />
             </div>
             <div className="space-y-3 animate-fade-in-up">
-              <h3 className="text-xl font-bold text-accent">Pengertian SPBE</h3>
+              <h3 className="text-xl font-bold text-accent">Pengertian Pemerintahan Digital</h3>
               <p className="text-base leading-relaxed">
                 Berdasarkan <strong className="text-accent">Peraturan Presiden Nomor 95 Tahun 2018</strong>,
-                <strong> Sistem Pemerintahan Berbasis Elektronik (SPBE)</strong> adalah penyelenggaraan
+                <strong> Sistem Pemerintahan Berbasis Elektronik (Pemerintahan Digital)</strong> adalah penyelenggaraan
                 pemerintahan yang memanfaatkan teknologi informasi dan komunikasi untuk memberikan layanan
-                kepada Pengguna SPBE — yaitu masyarakat, pelaku usaha, aparatur sipil negara, dan instansi
+                kepada Pengguna Pemerintahan Digital — yaitu masyarakat, pelaku usaha, aparatur sipil negara, dan instansi
                 pemerintah maupun non-pemerintah lainnya.
               </p>
             </div>
           </div>
 
-          {/* ── Regulasi SPBE Section ── */}
+          {/* ── Regulasi Pemerintahan Digital Section ── */}
           <div className="relative mt-8 pt-6 border-t border-white/20">
             <div className="flex items-center gap-2 mb-5">
               <BookOpen className="w-5 h-5 text-accent" />
-              <h3 className="text-lg font-bold text-accent">Dasar Hukum & Regulasi SPBE</h3>
+              <h3 className="text-lg font-bold text-accent">Dasar Hukum & Regulasi Pemerintahan Digital</h3>
             </div>
 
             {loading && (
@@ -109,18 +133,21 @@ export const Tentang = () => {
               </div>
             )}
 
-            {!loading && !error && regulasi && (() => {
-              const renderCategoryCard = (key) => {
-                const item = regulasi[key];
-                const label = KEBIJAKAN_LABELS[key];
-                const icon = KEBIJAKAN_ICONS[key];
-                const count = item?.data?.length || 0;
-                const isActive = activeCategory === key;
+            {!loading && !error && categories.length === 0 && (
+              <div className="text-center py-8 opacity-70 text-sm">Belum ada data regulasi tersedia.</div>
+            )}
+
+            {!loading && !error && categories.length > 0 && (() => {
+              const renderCategoryCard = (cat, idx) => {
+                const icon = CATEGORY_ICONS[idx % CATEGORY_ICONS.length];
+                const count = regulasiList.filter((r) => r.categoryRegulasiId === cat.id).length;
+                const isActive = activeCategory === cat.id;
+                const catRegulations = regulasiList.filter((r) => r.categoryRegulasiId === cat.id);
 
                 return (
                   <div
-                    key={key}
-                    onClick={() => handleCategoryClick(key)}
+                    key={cat.id}
+                    onClick={() => handleCategoryClick(cat.id)}
                     className={`backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 group cursor-pointer ${
                       isActive
                         ? 'bg-white/25 border-accent/50 ring-2 ring-accent/30 scale-[1.02] shadow-lg'
@@ -130,20 +157,17 @@ export const Tentang = () => {
                     <div className="flex items-start gap-3">
                       <span className="text-2xl shrink-0">{icon}</span>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-semibold text-sm text-accent">{label}</h4>
+                        <h4 className="font-semibold text-sm text-accent">{cat.name}</h4>
                         <p className="text-xs opacity-70 mt-0.5">
-                          {item?.status === 'error'
-                            ? 'Data tidak tersedia'
-                            : `${count} regulasi`
-                          }
+                          {count > 0 ? `${count} regulasi` : 'Belum ada regulasi'}
                         </p>
 
-                        {item?.status === 'success' && count > 0 && (
+                        {count > 0 && (
                           <ul className="mt-2 space-y-1">
-                            {item.data.slice(0, 3).map((reg, idx) => (
-                              <li key={idx} className="text-xs opacity-80 truncate flex items-start gap-1">
+                            {catRegulations.slice(0, 3).map((reg, regIdx) => (
+                              <li key={reg.id || regIdx} className="text-xs opacity-80 truncate flex items-start gap-1">
                                 <span className="text-accent mt-0.5 shrink-0">•</span>
-                                <span className="truncate">{reg.judul || reg.nama || reg.title || `Regulasi ${idx + 1}`}</span>
+                                <span className="truncate">{reg.title || `Regulasi ${regIdx + 1}`}</span>
                               </li>
                             ))}
                             {count > 3 && (
@@ -154,36 +178,17 @@ export const Tentang = () => {
                           </ul>
                         )}
                       </div>
-                      {/* Indikator toggle */}
                       <ChevronDown className={`w-4 h-4 text-accent/60 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                 );
               };
 
-              // Data yang difilter berdasarkan kategori aktif
-              const filteredRegulations = activeCategory && regulasi[activeCategory]
-                ? regulasi[activeCategory].data?.filter(
-                    (item) => item.category === activeCategory || true // siap untuk filter API
-                  ) || []
-                : [];
-
-              // Placeholder cards saat data kosong
-              const placeholderCards = [1, 2, 3, 4];
-
               return (
                 <div className="flex flex-col gap-4">
-                  {/* Baris 1: Peraturan Presiden, Peraturan Menteri, Pedoman Menteri */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {kategoriOrder.slice(0, 3).map(renderCategoryCard)}
-                  </div>
-                  {/* Baris 2: Peraturan Walikota, Keputusan Walikota — centered */}
-                  <div className="flex justify-center gap-4 flex-wrap">
-                    {kategoriOrder.slice(3).map((key) => (
-                      <div key={key} className="w-full sm:w-[calc(33.333%-0.67rem)]">
-                        {renderCategoryCard(key)}
-                      </div>
-                    ))}
+                  {/* Grid kategori cards — responsive, max 3 kolom */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categories.map((cat, idx) => renderCategoryCard(cat, idx))}
                   </div>
 
                   {/* ── Inline PDF Card Grid ── */}
@@ -196,16 +201,16 @@ export const Tentang = () => {
                       <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-xl">
-                            {KEBIJAKAN_ICONS[activeCategory]}
+                            {CATEGORY_ICONS[categories.findIndex((c) => c.id === activeCategory) % CATEGORY_ICONS.length] || '📄'}
                           </div>
                           <div>
                             <h4 className="font-bold text-sm text-accent">
-                              {KEBIJAKAN_LABELS[activeCategory]}
+                              {activeCategoryData?.name || 'Kategori'}
                             </h4>
                             <p className="text-[11px] opacity-60">
                               {filteredRegulations.length > 0
                                 ? `${filteredRegulations.length} dokumen tersedia`
-                                : 'Menunggu data dari API'}
+                                : 'Belum ada dokumen'}
                             </p>
                           </div>
                         </div>
@@ -231,43 +236,33 @@ export const Tentang = () => {
 
                                 {/* PDF Thumbnail Placeholder */}
                                 <div className="relative mx-2.5 mt-2.5 aspect-[4/3] max-h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
-                                  {reg.thumbnail ? (
-                                    <img
-                                      src={reg.thumbnail}
-                                      alt={`Preview ${reg.title || reg.judul || ''}`}
-                                      className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
-                                      loading="lazy"
-                                    />
-                                  ) : (
-                                    <>
-                                      {/* Dekorasi background garis */}
-                                      <div className="absolute inset-0 opacity-[0.03]">
-                                        <div className="absolute top-2 left-2 right-2 h-[2px] bg-slate-400 rounded" />
-                                        <div className="absolute top-4 left-2 right-5 h-[2px] bg-slate-400 rounded" />
-                                        <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
-                                        <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
-                                      </div>
-                                      <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
-                                        <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
-                                      </div>
-                                      <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
-                                        PDF
-                                      </span>
-                                    </>
-                                  )}
+                                  <>
+                                    <div className="absolute inset-0 opacity-[0.03]">
+                                      <div className="absolute top-2 left-2 right-2 h-[2px] bg-slate-400 rounded" />
+                                      <div className="absolute top-4 left-2 right-5 h-[2px] bg-slate-400 rounded" />
+                                      <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
+                                      <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
+                                    </div>
+                                    <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
+                                      <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
+                                    </div>
+                                    <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
+                                      PDF
+                                    </span>
+                                  </>
                                 </div>
 
                                 {/* Card Body */}
                                 <div className="px-2.5 pt-1.5 pb-2.5 flex-1 flex flex-col justify-between">
                                   <h5 className="font-semibold text-[11px] text-slate-800 line-clamp-2 group-hover:text-[#0057A4] transition-colors duration-300 leading-tight">
-                                    {reg.judul || reg.nama || reg.title || `Dokumen Regulasi ${idx + 1}`}
+                                    {reg.title || `Dokumen Regulasi ${idx + 1}`}
                                   </h5>
                                   <a
-                                    href={reg.pdf_url || reg.file_url || '#'}
+                                    href={getFileUrl(reg.fileUrl) || '#'}
                                     target="_blank"
                                     rel="noreferrer"
                                     onClick={(e) => {
-                                      if (!reg.pdf_url && !reg.file_url) {
+                                      if (!reg.fileUrl) {
                                         e.preventDefault();
                                       }
                                     }}
@@ -279,45 +274,10 @@ export const Tentang = () => {
                                 </div>
                               </div>
                             ))
-                          : /* ── Placeholder Cards (data kosong / API belum tersedia) ── */
-                            placeholderCards.map((_, idx) => (
-                              <div
-                                key={`placeholder-${idx}`}
-                                className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col h-[180px] w-full max-w-[240px]"
-                                style={{ animationDelay: `${idx * 80}ms`, animationFillMode: 'both' }}
-                              >
-                                {/* Aksen gradient atas */}
-                                <div className="h-1 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                {/* PDF Thumbnail Placeholder */}
-                                <div className="relative mx-2.5 mt-2.5 aspect-[4/3] max-h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
-                                  <div className="absolute inset-0 opacity-[0.03]">
-                                    <div className="absolute top-2 left-2 right-2 h-[2px] bg-slate-400 rounded" />
-                                    <div className="absolute top-4 left-2 right-5 h-[2px] bg-slate-400 rounded" />
-                                    <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
-                                    <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
-                                  </div>
-                                  <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
-                                    <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
-                                  </div>
-                                  <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
-                                    PDF
-                                  </span>
-                                </div>
-
-                                {/* Card Body Placeholder */}
-                                <div className="px-2.5 pt-1.5 pb-2.5 flex-1 flex flex-col justify-between">
-                                  <div className="space-y-1">
-                                    <div className="h-2 bg-slate-200 rounded-full w-3/4 animate-pulse" />
-                                    <div className="h-2 bg-slate-200 rounded-full w-1/2 animate-pulse" />
-                                  </div>
-                                  <div className="mt-1.5 flex items-center justify-center gap-1 w-full py-1 rounded-md bg-slate-200 text-slate-400 text-[9px] font-semibold cursor-not-allowed">
-                                    <Eye className="w-4 h-4" />
-                                    Lihat PDF
-                                  </div>
-                                </div>
-                              </div>
-                            ))
+                          : /* ── Pesan saat belum ada regulasi di kategori ini ── */
+                            <div className="col-span-full text-center py-8 opacity-70 text-sm">
+                              Belum ada dokumen regulasi untuk kategori ini.
+                            </div>
                         }
                       </div>
                     </div>

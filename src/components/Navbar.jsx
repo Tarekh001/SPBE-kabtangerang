@@ -1,55 +1,50 @@
 import { useEffect, useState, useRef, useMemo } from "react";
-import { Menu, X, ChevronDown, Globe, Info, BarChart3, Layers, Sun, Moon, Search, Mail } from "lucide-react";
+import {
+  Menu, X, ChevronDown, Globe,
+  Sun, Moon, Search,
+} from "lucide-react";
+import { useDynamicMenu } from "@/hooks/useDynamicMenu";
 
 /* ── Searchable content data for global search ── */
 const searchableItems = [
-  { label: "Tim Koordinasi SPBE", section: "indikator", domain: "Kebijakan" },
-  { label: "Rencana Induk SPBE", section: "indikator", domain: "Kebijakan" },
-  { label: "Arsitektur SPBE", section: "indikator", domain: "Tata Kelola" },
-  { label: "Peta Rencana SPBE", section: "indikator", domain: "Tata Kelola" },
+  { label: "Tim Koordinasi Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
+  { label: "Rencana Induk Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
+  { label: "Arsitektur Pemerintahan Digital", section: "indikator", domain: "Tata Kelola" },
+  { label: "Peta Rencana Pemerintahan Digital", section: "indikator", domain: "Tata Kelola" },
   { label: "Jaringan Intra Pemerintah", section: "indikator", domain: "Tata Kelola" },
   { label: "Penerapan Manajemen Risiko", section: "indikator", domain: "Manajemen" },
-  { label: "Audit Keamanan SPBE", section: "indikator", domain: "Manajemen" },
+  { label: "Audit Keamanan Pemerintahan Digital", section: "indikator", domain: "Manajemen" },
   { label: "Satu Data Indonesia", section: "indikator", domain: "Manajemen" },
   { label: "Portal Layanan Terpadu", section: "indikator", domain: "Layanan" },
   { label: "Sistem e-Office", section: "indikator", domain: "Layanan" },
   { label: "Pengaduan Online", section: "indikator", domain: "Layanan" },
-  { label: "Regulasi SPBE Daerah", section: "indikator", domain: "Kebijakan" },
+  { label: "Regulasi Pemerintahan Digital Daerah", section: "indikator", domain: "Kebijakan" },
   { label: "Peraturan Presiden", section: "tentang" },
   { label: "Peraturan Menteri", section: "tentang" },
   { label: "Pedoman Menteri", section: "tentang" },
   { label: "Peraturan Walikota", section: "tentang" },
   { label: "Keputusan Walikota", section: "tentang" },
-  { label: "Tentang SPBE", section: "tentang" },
-  { label: "Pengertian SPBE", section: "tentang" },
-  { label: "Implementasi SPBE", section: "implementasi" },
-  { label: "Kebijakan Internal SPBE", section: "indikator", domain: "Kebijakan" },
+  { label: "Tentang ", section: "tentang" },
+  { label: "Pengertian Pemerintahan Digital", section: "tentang" },
+  { label: "Implementasi Pemerintahan Digital", section: "implementasi" },
+  { label: "Kebijakan Internal Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
   { label: "Peraturan Pemerintah", section: "tentang" },
 ];
+
+const extractTargetId = (path) => {
+  if (!path || path === '#') return null;
+  // Strip leading # or #/ prefix to get the element ID
+  return path.replace(/^#\/?/, '') || null;
+};
 
 const scrollTo = (id) => {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-const navItems = [
-  { label: "Tentang SPBE", target: "tentang", icon: Info },
-  {
-    label: "Domain",
-    target: "indikator",
-    icon: Layers,
-    dropdown: [
-      { label: "Kebijakan", target: "indikator", domain: "Kebijakan" },
-      { label: "Tata Kelola", target: "indikator", domain: "Tata Kelola" },
-      { label: "Manajemen", target: "indikator", domain: "Manajemen" },
-      { label: "Layanan", target: "indikator", domain: "Layanan" },
-    ],
-  },
-  { label: "Implementasi", target: "implementasi", icon: BarChart3 },
-  { label: "Kontak", target: "contact-form", icon: Mail },
-];
-
 export const Navbar = () => {
+  const { menuItems } = useDynamicMenu();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileExpanded, setMobileExpanded] = useState(null);
@@ -100,16 +95,6 @@ export const Navbar = () => {
     setMobileExpanded(null);
   };
 
-  const handleDomainClick = (target, domain) => {
-    scrollTo(target);
-    setMobileOpen(false);
-    setActiveDropdown(null);
-    setMobileExpanded(null);
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("spbe-domain-select", { detail: { domain } }));
-    }, 400);
-  };
-
   const handleSearchResultClick = (item) => {
     scrollTo(item.section);
     setSearchOpen(false);
@@ -136,7 +121,7 @@ export const Navbar = () => {
             <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur grid place-items-center group-hover:rotate-180 transition-transform duration-500">
               <Globe className="w-4 h-4" />
             </div>
-            <span className="hidden sm:inline">SPBE<span className="text-accent"> Tangerang</span></span>
+            <span className="hidden sm:inline">PEMERINTAHAN<span className="text-accent"> DIGITAL</span></span>
           </button>
 
           {/* Theme Toggle */}
@@ -169,22 +154,47 @@ export const Navbar = () => {
             )}
           </div>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu — Dynamic */}
           <ul className="hidden lg:flex items-center gap-1">
-            {navItems.map((it) => {
-              const Icon = it.icon;
-              const isOpen = activeDropdown === it.label;
+            {menuItems.map((it) => {
+              const isOpen = activeDropdown === it.titleID;
               return (
-                <li key={it.label} className="relative">
-                  <button onClick={() => { if (it.dropdown) { toggleDropdown(it.label); } else { handleNavClick(it.target); } }} className="flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-white/15 transition-all text-sm font-medium">
-                    <Icon className="w-4 h-4" />
-                    {it.label}
-                    {it.dropdown && <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />}
+                <li key={it.titleID} className="relative">
+                  <button
+                    onClick={() => {
+                      if (it.children) {
+                        toggleDropdown(it.titleID);
+                      } else if (it.externalLink) {
+                        window.open(it.externalLink, "_blank", "noopener,noreferrer");
+                      } else {
+                        const targetId = extractTargetId(it.path);
+                        if (targetId) handleNavClick(targetId);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-white/15 transition-all text-sm font-medium"
+                  >
+                    {it.titleID}
+                    {it.children && <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />}
                   </button>
-                  {it.dropdown && isOpen && (
+                  {it.children && isOpen && (
                     <div className="absolute top-full left-0 mt-1 w-48 bg-card text-card-foreground rounded-xl shadow-elegant overflow-hidden animate-scale-in origin-top">
-                      {it.dropdown.map((d) => (
-                        <button key={d.label} onClick={() => handleDomainClick(d.target, d.domain)} className="w-full text-left block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary hover:pl-6 transition-all duration-200">{d.label}</button>
+                      {it.children.map((d) => (
+                        <button
+                          key={d.titleID}
+                          onClick={() => {
+                            setMobileOpen(false);
+                            setActiveDropdown(null);
+                            if (d.externalLink) {
+                              window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                            } else {
+                              const targetId = extractTargetId(d.path);
+                              if (targetId) scrollTo(targetId);
+                            }
+                          }}
+                          className="w-full text-left block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary hover:pl-6 transition-all duration-200"
+                        >
+                          {d.titleID}
+                        </button>
                       ))}
                     </div>
                   )}
@@ -199,7 +209,7 @@ export const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu — Dynamic */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-white/15 animate-fade-in">
             <div className="container pt-3 pb-1">
@@ -224,20 +234,48 @@ export const Navbar = () => {
             </div>
 
             <ul className="container py-3 space-y-1">
-              {navItems.map((it) => {
-                const Icon = it.icon;
-                const isExpanded = mobileExpanded === it.label;
+              {menuItems.map((it) => {
+                const isExpanded = mobileExpanded === it.titleID;
                 return (
-                  <li key={it.label}>
-                    <button onClick={() => { if (it.dropdown) { toggleMobileExpanded(it.label); } else { handleNavClick(it.target); } }} className="w-full text-left flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/15 transition-all">
-                      <span className="flex items-center gap-2 text-sm"><Icon className="w-4 h-4" /> {it.label}</span>
-                      {it.dropdown && <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />}
+                  <li key={it.titleID}>
+                    <button
+                      onClick={() => {
+                        if (it.children) {
+                          toggleMobileExpanded(it.titleID);
+                        } else if (it.externalLink) {
+                          window.open(it.externalLink, "_blank", "noopener,noreferrer");
+                          setMobileOpen(false);
+                        } else {
+                          const targetId = extractTargetId(it.path);
+                          if (targetId) {
+                            setMobileOpen(false);
+                            scrollTo(targetId);
+                          }
+                        }
+                      }}
+                      className="w-full text-left flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/15 transition-all"
+                    >
+                      <span className="flex items-center gap-2 text-sm">{it.titleID}</span>
+                      {it.children && <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />}
                     </button>
-                    {it.dropdown && isExpanded && (
+                    {it.children && isExpanded && (
                       <ul className="ml-6 mt-1 space-y-1 border-l-2 border-white/20 pl-3 animate-fade-in">
-                        {it.dropdown.map((d) => (
-                          <li key={d.label}>
-                            <button onClick={() => handleDomainClick(d.target, d.domain)} className="w-full text-left px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all">{d.label}</button>
+                        {it.children.map((d) => (
+                          <li key={d.titleID}>
+                            <button
+                              onClick={() => {
+                                setMobileOpen(false);
+                                if (d.externalLink) {
+                                  window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                                } else {
+                                  const targetId = extractTargetId(d.path);
+                                  if (targetId) scrollTo(targetId);
+                                }
+                              }}
+                              className="w-full text-left px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all"
+                            >
+                              {d.titleID}
+                            </button>
                           </li>
                         ))}
                       </ul>

@@ -1,6 +1,142 @@
+import { secureFetch } from '@/lib/api';
+import logger from '@/lib/logger';
+
+// ─────────────────────────────────────────────
+// URL Utilities
+// ─────────────────────────────────────────────
+
 /**
- * Mapping kategori kebijakan ke endpoint API spesifik
+ * Origin server backend untuk gambar/file statis.
+ * Dibaca dari environment variable VITE_MEDIA_ORIGIN.
+ * Digunakan untuk mengkonversi path relatif dari API menjadi URL absolut.
  */
+const MEDIA_ORIGIN = (import.meta.env.VITE_MEDIA_ORIGIN || '').replace(/\/+$/, '');
+
+/**
+ * Mengkonversi path relatif dari API menjadi URL lengkap.
+ * @param {string} path - Path relatif (misal `/images/foto.jpg`)
+ * @returns {string} URL lengkap
+ */
+export const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  // Encode tiap segmen path (spasi, karakter khusus, dll) tapi pertahankan `/`
+  const encoded = path.split('/').map((seg) => encodeURIComponent(seg)).join('/');
+  return `${MEDIA_ORIGIN}${encoded.startsWith('/') ? '' : '/'}${encoded}`;
+};
+
+/**
+ * Alias untuk getFileUrl — sama dengan getImageUrl (path juga di-encode)
+ */
+export const getFileUrl = getImageUrl;
+
+// ─────────────────────────────────────────────
+// Generic Fetch Helper
+// ─────────────────────────────────────────────
+
+/**
+ * Generic fetcher yang mengekstrak array data dari response API.
+ * Response API selalu berformat: { data: { data: [...], meta: {...} } }
+ *
+ * @param {string} endpoint - Path endpoint (misal '/indeks')
+ * @param {Object} [options] - Opsi tambahan untuk secureFetch
+ * @returns {Promise<Array>} Array data dari response
+ */
+const fetchApiData = async (endpoint, options = {}) => {
+  try {
+    const response = await secureFetch(endpoint, {
+      method: 'GET',
+      timeout: 10000,
+      retries: 1,
+      ...options,
+    });
+
+    // Response format: { data: { data: [...], meta: {...} } }
+    if (response?.data?.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    // Fallback jika format berbeda
+    if (Array.isArray(response?.data)) return response.data;
+    if (Array.isArray(response)) return response;
+
+    logger.warn(`Format response tidak dikenali untuk ${endpoint}`, response);
+    return [];
+  } catch (error) {
+    logger.error(`fetchApiData(${endpoint})`, error);
+    throw error;
+  }
+};
+
+// ─────────────────────────────────────────────
+// Endpoint-specific Fetch Functions
+// ─────────────────────────────────────────────
+
+/**
+ * Mengambil data implementasi dari endpoint /indeks
+ * @returns {Promise<Array>} Data indeks implementasi
+ */
+export const fetchIndeks = () => fetchApiData('/indeks');
+
+/**
+ * Mengambil daftar domain dari endpoint /domain
+ * @returns {Promise<Array>} Daftar domain
+ */
+export const fetchDomains = () => fetchApiData('/domain');
+
+/**
+ * Mengambil daftar aspek dari endpoint /aspek
+ * @returns {Promise<Array>} Daftar aspek (memiliki field domainId)
+ */
+export const fetchAspek = () => fetchApiData('/aspek');
+
+/**
+ * Mengambil daftar indikator dari endpoint /indikator
+ * @returns {Promise<Array>} Daftar indikator (memiliki field aspekId)
+ */
+export const fetchIndikator = () => fetchApiData('/indikator');
+
+/**
+ * Mengambil daftar regulasi dari endpoint /regulasi
+ * @returns {Promise<Array>} Daftar regulasi (memiliki field categoryRegulasiId)
+ */
+export const fetchRegulasiList = () => fetchApiData('/regulasi');
+
+/**
+ * Mengambil daftar kategori regulasi dari endpoint /categoryregulasi
+ * @returns {Promise<Array>} Daftar kategori regulasi
+ */
+export const fetchCategoryRegulasi = () => fetchApiData('/categoryregulasi');
+
+/**
+ * Mengambil daftar menu dinamis dari endpoint /menu
+ * @returns {Promise<Array>} Daftar menu (fields: id, name, type, parentId, hasContent, externalLink, isVisible)
+ */
+export const fetchMenuList = () => fetchApiData('/menu');
+
+/**
+ * Mengambil daftar konten dari endpoint /content
+ * @returns {Promise<Array>} Daftar konten (fields: id, menuId, title, body, imageUrl, isVisible)
+ */
+export const fetchContentList = () => fetchApiData('/content');
+
+/**
+ * Convenience object grouping CMS API endpoints (Smart City pattern).
+ * Used by menuConfig.js to fetch menu + content.
+ */
+export const apiEndpoints = {
+  menu: {
+    getAll: () => fetchApiData('/menu'),
+  },
+  content: {
+    getAll: () => fetchApiData('/content'),
+  },
+};
+
+// ─────────────────────────────────────────────
+// DEPRECATED — Legacy functions (backward compat)
+// ─────────────────────────────────────────────
+
+/** @deprecated Gunakan fetchRegulasiList + fetchCategoryRegulasi */
 export const KEBIJAKAN_ENDPOINTS = {
   presiden: '/peraturan/presiden',
   mentri: '/peraturan/mentri',
@@ -9,9 +145,7 @@ export const KEBIJAKAN_ENDPOINTS = {
   keputusan: '/peraturan/keputusan'
 };
 
-/**
- * Label yang ditampilkan di UI untuk setiap kategori
- */
+/** @deprecated Gunakan fetchCategoryRegulasi untuk label dinamis */
 export const KEBIJAKAN_LABELS = {
   presiden: 'Peraturan Presiden',
   mentri: 'Peraturan Menteri',
@@ -20,9 +154,7 @@ export const KEBIJAKAN_LABELS = {
   keputusan: 'Keputusan Walikota'
 };
 
-/**
- * Icon identifiers untuk setiap kategori regulasi
- */
+/** @deprecated Ikon statis — gunakan data dari API */
 export const KEBIJAKAN_ICONS = {
   presiden: '🏛️',
   mentri: '📋',
@@ -31,56 +163,30 @@ export const KEBIJAKAN_ICONS = {
   keputusan: '📜'
 };
 
-import { secureFetch } from '@/lib/api';
-import logger from '@/lib/logger';
-
-/**
- * Fungsi untuk mengambil data Kebijakan SPBE berdasarkan kategorinya.
- * Menggunakan secure fetch wrapper dengan timeout, retry, dan validasi.
- *
- * @param {string} type - Harus bernilai antara: "presiden", "mentri", "pedoman", "walikota", "keputusan"
- * @returns {Promise<Array>} Data kebijakan
- */
+/** @deprecated Gunakan fetchRegulasiList() */
 export const fetchKebijakan = async (type) => {
-  // 1. Validasi parameter tipe kategori kebijakan
   if (!KEBIJAKAN_ENDPOINTS[type]) {
     throw new Error(`Kategori kebijakan tidak valid: ${type}`);
   }
-
   try {
-    const endpoint = KEBIJAKAN_ENDPOINTS[type];
-
-    // 2. Memanggil API menggunakan secure fetch wrapper
-    //    (timeout, retry, validasi JSON sudah built-in)
-    const data = await secureFetch(endpoint, {
+    const data = await secureFetch(KEBIJAKAN_ENDPOINTS[type], {
       method: 'GET',
-      timeout: 10000, // 10 detik timeout per request
-      retries: 1,     // 1x retry jika gagal
+      timeout: 10000,
+      retries: 1,
     });
-
     return data;
   } catch (error) {
-    // 3. Penanganan error — hanya log di development
     logger.error(`fetchKebijakan(${type})`, error);
-
-    // Error dilemparkan kembali agar frontend bisa merespon dengan UI feedback
     throw error;
   }
 };
 
-/**
- * Fungsi untuk mengambil SEMUA kategori regulasi secara parallel.
- * Menggunakan Promise.allSettled agar satu kegagalan tidak menghentikan yang lain.
- *
- * @returns {Promise<Object>} Object dengan key kategori dan value { status, data, error }
- */
+/** @deprecated Gunakan fetchRegulasiList() + fetchCategoryRegulasi() */
 export const fetchAllRegulasi = async () => {
   const types = Object.keys(KEBIJAKAN_ENDPOINTS);
-
   const results = await Promise.allSettled(
     types.map((type) => fetchKebijakan(type))
   );
-
   const regulasi = {};
   types.forEach((type, index) => {
     const result = results[index];
@@ -98,7 +204,6 @@ export const fetchAllRegulasi = async () => {
       };
     }
   });
-
   return regulasi;
 };
 

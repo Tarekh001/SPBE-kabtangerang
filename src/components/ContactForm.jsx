@@ -91,30 +91,74 @@ export const ContactForm = () => {
     // ── Close modal ──
     setShowModal(false);
     setIsVerified(true);
-    setButtonLabel("✓ Verified / Saya Bukan Robot");
+    setButtonLabel("Mengirim...");
 
-    // ── Simulate email send ──
-    console.log("══════════════════════════════════════");
-    console.log("📧 Email Sent Successfully!");
-    console.log("══════════════════════════════════════");
-    console.log("Username :", formData.username);
-    console.log("Email    :", formData.email);
-    console.log("Subjek   :", formData.subject);
-    console.log("Pesan    :", formData.message);
-    console.log("══════════════════════════════════════");
+    const formspreeUrl = import.meta.env.VITE_FORMSPREE_URL || '';
 
-    alert(
-      `✅ Email berhasil dikirim!\n\nDari: ${formData.username} (${formData.email})\nSubjek: ${formData.subject}`
-    );
-
-    // ── Reset after 2 seconds ──
-    setTimeout(() => {
-      setFormData({ username: "", email: "", subject: "", message: "" });
+    if (!formspreeUrl || formspreeUrl.includes('ganti_dengan_id_anda')) {
+      alert("⚠️ Mohon isi VITE_FORMSPREE_URL di file .env terlebih dahulu!");
       setButtonLabel("Send Email");
       setIsVerified(false);
-      setCaptchaInput("");
-      setIsRobotChecked(false);
-    }, 2000);
+      return;
+    }
+
+    // Gunakan trik proxy untuk membodohi Antivirus
+    const proxyUrl = formspreeUrl.replace('https://formspree.io', '/api/formspree');
+
+    fetch(proxyUrl, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nama: formData.username,
+        email: formData.email,
+        subjek: formData.subject,
+        pesan: formData.message
+      })
+    })
+    .then(async (response) => {
+      if (response.ok) {
+        console.log('SUCCESS!');
+        setButtonLabel("✓ Berhasil Terkirim");
+        alert(
+          `✅ Email berhasil dikirim!\n\nDari: ${formData.username} (${formData.email})\nSubjek: ${formData.subject}`
+        );
+        
+        setTimeout(() => {
+          setFormData({ username: "", email: "", subject: "", message: "" });
+          setButtonLabel("Send Email");
+          setIsVerified(false);
+          setCaptchaInput("");
+          setIsRobotChecked(false);
+        }, 2000);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        console.log('FAILED...', data);
+        setButtonLabel("❌ Gagal");
+        alert(`❌ Gagal mengirim pesan. Pastikan URL Formspree benar.`);
+        
+        setTimeout(() => {
+          setButtonLabel("Send Email");
+          setIsVerified(false);
+          setCaptchaInput("");
+          setIsRobotChecked(false);
+        }, 2000);
+      }
+    })
+    .catch((error) => {
+      console.log('NETWORK ERROR...', error);
+      setButtonLabel("❌ Gagal");
+      alert(`❌ Koneksi Terputus. Pastikan internet Anda aktif.`);
+      
+      setTimeout(() => {
+        setButtonLabel("Send Email");
+        setIsVerified(false);
+        setCaptchaInput("");
+        setIsRobotChecked(false);
+      }, 2000);
+    });
   }, [captchaInput, captchaCode, formData]);
 
   // ── Close modal on Escape key ──
