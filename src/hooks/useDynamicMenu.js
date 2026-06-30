@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import fetchMenuFromCMS from '../data/menuConfig';
+import fetchMenuFromCMS from '../data/menuconfig';
 import { STATIC_MENU_FALLBACK } from '../data/staticMenuFallback';
 
 const CACHE_KEY = 'smartcity_menu_cache_v2';
@@ -14,26 +14,9 @@ export const useDynamicMenu = () => {
     const loadMenu = async () => {
       try {
         setLoading(true);
-
-        // Cek cache dulu
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_DURATION) {
-            setMenuItems(data);
-            setLoading(false);
-            return;
-          }
-        }
-
+        // By-pass cache while using Postman for mockup
         const data = await fetchMenuFromCMS();
         setMenuItems(data);
-
-        // Simpan ke cache
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-          data,
-          timestamp: Date.now()
-        }));
       } catch (err) {
         setError(err.message);
         setMenuItems([]);

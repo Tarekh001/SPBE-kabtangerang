@@ -57,9 +57,9 @@ export const Indikator = () => {
     const handleDomainSelect = (e) => {
       const { domain } = e.detail;
       if (domain) {
-        const found = domains.find((d) => d.name === domain);
+        const found = domains.find((d) => d.name.toLowerCase() === domain.toLowerCase());
         if (found) {
-          setActiveDomain(domain);
+          setActiveDomain(found.name);
           setActiveAspekId("Semua");
           setCurrentPage(1);
           setHighlightedDomain(domain);

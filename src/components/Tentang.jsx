@@ -258,12 +258,13 @@ export const Tentang = () => {
                                     {reg.title || `Dokumen Regulasi ${idx + 1}`}
                                   </h5>
                                   <a
-                                    href={getFileUrl(reg.fileUrl) || '#'}
+                                    href={reg.fileUrl ? (reg.fileUrl.startsWith('http') ? reg.fileUrl : `${(import.meta.env.VITE_MEDIA_ORIGIN || 'http://localhost:8000').replace(/\/$/, '')}${reg.fileUrl.startsWith('/') ? '' : '/'}${reg.fileUrl}`) : '#'}
                                     target="_blank"
                                     rel="noreferrer"
                                     onClick={(e) => {
                                       if (!reg.fileUrl) {
                                         e.preventDefault();
+                                        alert("File dokumen belum tersedia.");
                                       }
                                     }}
                                     className="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 rounded-md bg-gradient-to-r from-[#0057A4] to-[#0070CC] text-white text-[9px] font-semibold hover:shadow-md hover:shadow-[#0057A4]/25 transition-all duration-300"

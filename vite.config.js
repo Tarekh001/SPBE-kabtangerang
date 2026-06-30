@@ -68,6 +68,12 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_MEDIA_ORIGIN || 'http://localhost:8000',
           changeOrigin: true,
           secure: true,
+        },
+        // Proxy gambar/file statis dari backend — bypass CORS browser
+        '/images': {
+          target: env.VITE_MEDIA_ORIGIN || 'http://localhost:8000',
+          changeOrigin: true,
+          secure: true,
         }
       }
     },

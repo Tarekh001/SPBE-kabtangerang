@@ -17,13 +17,13 @@ const transformMenuData = (flatMenus) => {
       .map(sub => ({
         titleID: sub.name,
         titleEN: sub.name,
-        path: sub.externalLink || '#' + sub.name.toLowerCase().replace(/\s+/g, '-'),
+        path: sub.externalLink || '/halaman/' + sub.name.toLowerCase().replace(/\s+/g, '-'),
       }));
 
     const result = {
       titleID: main.name,
       titleEN: main.name,
-      path: children.length > 0 ? '#' : (main.externalLink || '#' + main.name.toLowerCase().replace(/\s+/g, '-')),
+      path: children.length > 0 ? '#' : (main.externalLink || '/halaman/' + main.name.toLowerCase().replace(/\s+/g, '-')),
     };
 
     if (children.length > 0) {

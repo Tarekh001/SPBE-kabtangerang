@@ -4,6 +4,7 @@ import {
   Sun, Moon, Search,
 } from "lucide-react";
 import { useDynamicMenu } from "@/hooks/useDynamicMenu";
+import { useNavigate, useLocation } from "react-router-dom";
 
 /* ── Searchable content data for global search ── */
 const searchableItems = [
@@ -44,6 +45,8 @@ const scrollTo = (id) => {
 
 export const Navbar = () => {
   const { menuItems } = useDynamicMenu();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -88,15 +91,38 @@ export const Navbar = () => {
   const toggleDropdown = (label) => setActiveDropdown((prev) => (prev === label ? null : label));
   const toggleMobileExpanded = (label) => setMobileExpanded((prev) => (prev === label ? null : label));
 
-  const handleNavClick = (target) => {
-    scrollTo(target);
+  const handleNavClick = (target, label = null) => {
+    if (target.startsWith('/')) {
+      navigate(target);
+    } else {
+      // Jika user tidak berada di beranda (misal: halaman dinamis), pindah ke Home dulu
+      if (location.pathname !== '/') {
+        navigate('/');
+        // Beri waktu sebentar agar layout Home selesai dimuat, lalu scroll
+        setTimeout(() => scrollTo(target), 300);
+      } else {
+        scrollTo(target);
+      }
+    }
     setMobileOpen(false);
     setActiveDropdown(null);
     setMobileExpanded(null);
+
+    // KETIKA KLIK MENU, DISPATCH EVENT JUGA UNTUK DOMAIN SELECT
+    if (label) {
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("spbe-domain-select", { detail: { domain: label } }));
+      }, 400);
+    }
   };
 
   const handleSearchResultClick = (item) => {
-    scrollTo(item.section);
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => scrollTo(item.section), 300);
+    } else {
+      scrollTo(item.section);
+    }
     setSearchOpen(false);
     setSearchQuery("");
     if (item.domain) {
@@ -166,9 +192,11 @@ export const Navbar = () => {
                         toggleDropdown(it.titleID);
                       } else if (it.externalLink) {
                         window.open(it.externalLink, "_blank", "noopener,noreferrer");
+                      } else if (it.path && it.path.startsWith('/')) {
+                         handleNavClick(it.path, it.titleID);
                       } else {
                         const targetId = extractTargetId(it.path);
-                        if (targetId) handleNavClick(targetId);
+                        if (targetId) handleNavClick(targetId, it.titleID);
                       }
                     }}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-white/15 transition-all text-sm font-medium"
@@ -186,9 +214,11 @@ export const Navbar = () => {
                             setActiveDropdown(null);
                             if (d.externalLink) {
                               window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                            } else if (d.path && d.path.startsWith('/')) {
+                               handleNavClick(d.path, d.titleID);
                             } else {
                               const targetId = extractTargetId(d.path);
-                              if (targetId) scrollTo(targetId);
+                              if (targetId) handleNavClick(targetId, d.titleID);
                             }
                           }}
                           className="w-full text-left block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary hover:pl-6 transition-all duration-200"
@@ -245,11 +275,12 @@ export const Navbar = () => {
                         } else if (it.externalLink) {
                           window.open(it.externalLink, "_blank", "noopener,noreferrer");
                           setMobileOpen(false);
+                        } else if (it.path && it.path.startsWith('/')) {
+                           handleNavClick(it.path, it.titleID);
                         } else {
                           const targetId = extractTargetId(it.path);
                           if (targetId) {
-                            setMobileOpen(false);
-                            scrollTo(targetId);
+                            handleNavClick(targetId, it.titleID);
                           }
                         }
                       }}
@@ -267,9 +298,11 @@ export const Navbar = () => {
                                 setMobileOpen(false);
                                 if (d.externalLink) {
                                   window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                                } else if (d.path && d.path.startsWith('/')) {
+                                   handleNavClick(d.path, d.titleID);
                                 } else {
                                   const targetId = extractTargetId(d.path);
-                                  if (targetId) scrollTo(targetId);
+                                  if (targetId) handleNavClick(targetId, d.titleID);
                                 }
                               }}
                               className="w-full text-left px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all"

@@ -20,9 +20,8 @@ const MEDIA_ORIGIN = (import.meta.env.VITE_MEDIA_ORIGIN || '').replace(/\/+$/, '
 export const getImageUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
-  // Encode tiap segmen path (spasi, karakter khusus, dll) tapi pertahankan `/`
-  const encoded = path.split('/').map((seg) => encodeURIComponent(seg)).join('/');
-  return `${MEDIA_ORIGIN}${encoded.startsWith('/') ? '' : '/'}${encoded}`;
+  // Path relatif (misal /images/foto.jpg) — di dev lewat Vite proxy, di prod lewat nginx proxy
+  return path.startsWith('/') ? path : '/' + path;
 };
 
 /**
