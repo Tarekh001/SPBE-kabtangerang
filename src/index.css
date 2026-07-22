@@ -363,3 +363,58 @@ h1, h2, h3, h4 {
   animation: accordion-expand 0.3s ease-out forwards;
   overflow: hidden;
 }
+
+/* ========================================================================
+   Accessibility Utility Classes
+   ======================================================================== */
+
+body.high-contrast {
+  /* Softer High Contrast colors for reduced eye strain */
+  --color-background: hsl(0 0% 8%) !important;
+  --color-foreground: hsl(45 100% 75%) !important;
+  --color-card: hsl(0 0% 12%) !important;
+  --color-card-foreground: hsl(45 100% 75%) !important;
+  --color-primary: hsl(45 100% 65%) !important;
+  --color-primary-foreground: hsl(0 0% 5%) !important;
+  --color-secondary: hsl(0 0% 20%) !important;
+  --color-secondary-foreground: hsl(45 100% 80%) !important;
+  --color-muted: hsl(0 0% 15%) !important;
+  --color-muted-foreground: hsl(45 100% 60%) !important;
+  --color-border: hsl(45 100% 50%) !important;
+  --color-input: hsl(0 0% 10%) !important;
+  --gradient-primary: linear-gradient(135deg, hsl(45 100% 65%), hsl(45 100% 55%)) !important;
+  --gradient-hero: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 5%)) !important;
+  --gradient-card: linear-gradient(145deg, hsl(0 0% 12%), hsl(0 0% 8%)) !important;
+  --wave-fill: hsl(0 0% 8%) !important;
+}
+
+body.high-contrast * {
+  border-color: currentColor !important;
+}
+
+body.high-contrast *:not(.bg-primary):not(.bg-primary *):not(button):not(button *) {
+  color: var(--color-foreground) !important;
+}
+
+body.readable-text,
+body.readable-text p,
+body.readable-text div,
+body.readable-text span,
+body.readable-text h1,
+body.readable-text h2,
+body.readable-text h3,
+body.readable-text h4,
+body.readable-text h5,
+body.readable-text h6 {
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  letter-spacing: 0.05em !important;
+  line-height: 1.8 !important;
+}
+
+body.readable-text {
+  font-size: 1.05rem !important;
+}
+
+body.readable-text p {
+  margin-bottom: 1.5rem !important;
+}

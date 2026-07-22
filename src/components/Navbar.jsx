@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
-  Menu, X, ChevronDown, Globe,
+  Menu, X, ChevronDown, ChevronRight, Globe,
   Sun, Moon, Search,
 } from "lucide-react";
 import { useDynamicMenu } from "@/hooks/useDynamicMenu";
@@ -89,7 +89,14 @@ export const Navbar = () => {
   };
 
   const toggleDropdown = (label) => setActiveDropdown((prev) => (prev === label ? null : label));
-  const toggleMobileExpanded = (label) => setMobileExpanded((prev) => (prev === label ? null : label));
+  const toggleMobileExpanded = (parentId, childId = null) => {
+    if (!childId) {
+      setMobileExpanded((prev) => (prev === parentId ? null : parentId));
+    } else {
+      const fullId = `${parentId}-${childId}`;
+      setMobileExpanded((prev) => (prev === fullId ? parentId : fullId));
+    }
+  };
 
   const handleNavClick = (target, label = null) => {
     if (target.startsWith('/')) {
@@ -207,24 +214,53 @@ export const Navbar = () => {
                   {it.children && isOpen && (
                     <div className="absolute top-full left-0 mt-1 w-48 bg-card text-card-foreground rounded-xl shadow-elegant overflow-hidden animate-scale-in origin-top">
                       {it.children.map((d) => (
-                        <button
-                          key={d.titleID}
-                          onClick={() => {
-                            setMobileOpen(false);
-                            setActiveDropdown(null);
-                            if (d.externalLink) {
-                              window.open(d.externalLink, "_blank", "noopener,noreferrer");
-                            } else if (d.path && d.path.startsWith('/')) {
-                               handleNavClick(d.path, d.titleID);
-                            } else {
-                              const targetId = extractTargetId(d.path);
-                              if (targetId) handleNavClick(targetId, d.titleID);
-                            }
-                          }}
-                          className="w-full text-left block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary hover:pl-6 transition-all duration-200"
-                        >
-                          {d.titleID}
-                        </button>
+                        <div key={d.titleID} className="group/sub">
+                          <button
+                            onClick={() => {
+                              if (!d.children) {
+                                setMobileOpen(false);
+                                setActiveDropdown(null);
+                                if (d.externalLink) {
+                                  window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                                } else if (d.path && d.path.startsWith('/')) {
+                                   handleNavClick(d.path, d.titleID);
+                                } else {
+                                  const targetId = extractTargetId(d.path);
+                                  if (targetId) handleNavClick(targetId, d.titleID);
+                                }
+                              }
+                            }}
+                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary transition-all duration-200"
+                          >
+                            <span>{d.titleID}</span>
+                            {d.children && <ChevronDown className="w-3.5 h-3.5 transition-transform duration-300 group-hover/sub:rotate-180" />}
+                          </button>
+
+                          {d.children && (
+                            <div className="hidden group-hover/sub:block bg-black/5 dark:bg-white/5 animate-fade-in">
+                              {d.children.map((sub) => (
+                                <button
+                                  key={sub.titleID}
+                                  onClick={() => {
+                                    setMobileOpen(false);
+                                    setActiveDropdown(null);
+                                    if (sub.externalLink) {
+                                      window.open(sub.externalLink, "_blank", "noopener,noreferrer");
+                                    } else if (sub.path && sub.path.startsWith('/')) {
+                                       handleNavClick(sub.path, sub.titleID);
+                                    } else {
+                                      const targetId = extractTargetId(sub.path);
+                                      if (targetId) handleNavClick(targetId, sub.titleID);
+                                    }
+                                  }}
+                                  className="w-full text-left block px-6 py-2 text-xs text-muted-foreground hover:text-primary hover:bg-secondary transition-all duration-200 border-l-2 border-transparent hover:border-primary"
+                                >
+                                  {sub.titleID}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -265,7 +301,7 @@ export const Navbar = () => {
 
             <ul className="container py-3 space-y-1">
               {menuItems.map((it) => {
-                const isExpanded = mobileExpanded === it.titleID;
+                const isExpanded = mobileExpanded === it.titleID || (mobileExpanded && mobileExpanded.startsWith(it.titleID + '-'));
                 return (
                   <li key={it.titleID}>
                     <button
@@ -291,26 +327,59 @@ export const Navbar = () => {
                     </button>
                     {it.children && isExpanded && (
                       <ul className="ml-6 mt-1 space-y-1 border-l-2 border-white/20 pl-3 animate-fade-in">
-                        {it.children.map((d) => (
-                          <li key={d.titleID}>
-                            <button
-                              onClick={() => {
-                                setMobileOpen(false);
-                                if (d.externalLink) {
-                                  window.open(d.externalLink, "_blank", "noopener,noreferrer");
-                                } else if (d.path && d.path.startsWith('/')) {
-                                   handleNavClick(d.path, d.titleID);
-                                } else {
-                                  const targetId = extractTargetId(d.path);
-                                  if (targetId) handleNavClick(targetId, d.titleID);
-                                }
-                              }}
-                              className="w-full text-left px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all"
-                            >
-                              {d.titleID}
-                            </button>
-                          </li>
-                        ))}
+                        {it.children.map((d) => {
+                          const isSubExpanded = mobileExpanded === `${it.titleID}-${d.titleID}`;
+                          return (
+                            <li key={d.titleID}>
+                              <button
+                                onClick={() => {
+                                  if (d.children) {
+                                    toggleMobileExpanded(it.titleID, d.titleID);
+                                  } else {
+                                    setMobileOpen(false);
+                                    if (d.externalLink) {
+                                      window.open(d.externalLink, "_blank", "noopener,noreferrer");
+                                    } else if (d.path && d.path.startsWith('/')) {
+                                       handleNavClick(d.path, d.titleID);
+                                    } else {
+                                      const targetId = extractTargetId(d.path);
+                                      if (targetId) handleNavClick(targetId, d.titleID);
+                                    }
+                                  }
+                                }}
+                                className="w-full text-left flex items-center justify-between px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all"
+                              >
+                                <span>{d.titleID}</span>
+                                {d.children && <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isSubExpanded ? "rotate-180" : ""}`} />}
+                              </button>
+                              
+                              {d.children && isSubExpanded && (
+                                <ul className="ml-4 mt-1 space-y-1 border-l-2 border-white/20 pl-3 animate-fade-in">
+                                  {d.children.map((sub) => (
+                                    <li key={sub.titleID}>
+                                      <button
+                                        onClick={() => {
+                                          setMobileOpen(false);
+                                          if (sub.externalLink) {
+                                            window.open(sub.externalLink, "_blank", "noopener,noreferrer");
+                                          } else if (sub.path && sub.path.startsWith('/')) {
+                                             handleNavClick(sub.path, sub.titleID);
+                                          } else {
+                                            const targetId = extractTargetId(sub.path);
+                                            if (targetId) handleNavClick(targetId, sub.titleID);
+                                          }
+                                        }}
+                                        className="w-full text-left px-3 py-1.5 rounded-lg text-sm hover:bg-white/15 transition-all text-white/80"
+                                      >
+                                        {sub.titleID}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </li>

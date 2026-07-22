@@ -103,11 +103,11 @@ export const Tentang = () => {
             <div className="space-y-3 animate-fade-in-up">
               <h3 className="text-xl font-bold text-accent">Pengertian Pemerintahan Digital</h3>
               <p className="text-base leading-relaxed">
-                Berdasarkan <strong className="text-accent">Peraturan Presiden Nomor 95 Tahun 2018</strong>,
-                <strong> Sistem Pemerintahan Berbasis Elektronik (Pemerintahan Digital)</strong> adalah penyelenggaraan
-                pemerintahan yang memanfaatkan teknologi informasi dan komunikasi untuk memberikan layanan
-                kepada Pengguna Pemerintahan Digital — yaitu masyarakat, pelaku usaha, aparatur sipil negara, dan instansi
-                pemerintah maupun non-pemerintah lainnya.
+                Berdasarkan <strong className="text-accent">Peraturan Menteri Nomor 8 Tahun 2026</strong>,
+                <strong> Pemerintahan Digital </strong> adalah transformasi pemerintahan yang memanfaatkan
+                                                data dan teknologi digital untuk peningkatan kualitas
+                                                layanan pemerintah guna pencapaian visi, misi, dan
+                                                arah pembangunan nasional.
               </p>
             </div>
           </div>

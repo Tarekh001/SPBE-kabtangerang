@@ -90,16 +90,16 @@ export const Indikator = () => {
     return indicators.filter((ind) => {
       // Filter by domain (via aspek's domainId)
       if (activeDomainId) {
-        const aspek = aspects.find((a) => a.id === ind.aspekId);
-        if (!aspek || aspek.domainId !== activeDomainId) return false;
+        const aspek = aspects.find((a) => String(a.id) === String(ind.aspekId));
+        if (!aspek || String(aspek.domainId) !== String(activeDomainId)) return false;
       }
       // Filter by specific aspek
-      if (activeAspekId !== "Semua" && ind.aspekId !== activeAspekId) return false;
+      if (activeAspekId !== "Semua" && String(ind.aspekId) !== String(activeAspekId)) return false;
       // Search filter
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        const aspek = aspects.find((a) => a.id === ind.aspekId);
-        const domain = aspek ? domains.find((d) => d.id === aspek.domainId) : null;
+        const aspek = aspects.find((a) => String(a.id) === String(ind.aspekId));
+        const domain = aspek ? domains.find((d) => String(d.id) === String(aspek.domainId)) : null;
         const searchable = [
           ind.name,
           aspek?.name,
@@ -114,8 +114,8 @@ export const Indikator = () => {
   // ── Enrich filtered data with domain & aspek names ──
   const enrichedData = useMemo(() => {
     return filtered.map((ind, idx) => {
-      const aspek = aspects.find((a) => a.id === ind.aspekId);
-      const domain = aspek ? domains.find((d) => d.id === aspek.domainId) : null;
+      const aspek = aspects.find((a) => String(a.id) === String(ind.aspekId));
+      const domain = aspek ? domains.find((d) => String(d.id) === String(aspek.domainId)) : null;
       return {
         no: idx + 1,
         domain: domain?.name || "—",

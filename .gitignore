@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# ── Folder Diagram ──
+Diagram/
+
 # ── Environment Variables (CRITICAL SECURITY) ──
 # JANGAN PERNAH commit file .env ke repository!
 .env

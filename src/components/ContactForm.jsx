@@ -1,23 +1,15 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Mail, User, FileText, MessageSquare, ShieldCheck, RefreshCw, X, CheckCircle2 } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Helper: Generate random alphanumeric captcha (5-6 chars)
-   ═══════════════════════════════════════════════════════════════════════════ */
-const generateCaptcha = () => {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  const length = Math.random() < 0.5 ? 5 : 6;
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Helper: Simple email regex validator
+   Helpers
    ═══════════════════════════════════════════════════════════════════════════ */
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const isXSSPattern = (str) => /<script>|javascript:|onerror=|onclick=|iframe/i.test(str);
+const isValidName = (str) => str.length <= 50 && /^[a-zA-Z0-9\s.\'-]+$/.test(str);
+const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ContactForm Component
@@ -33,28 +25,77 @@ export const ContactForm = () => {
 
   // ── UI state ──
   const [showModal, setShowModal] = useState(false);
-  const [isRobotChecked, setIsRobotChecked] = useState(false);
-  const [captchaCode, setCaptchaCode] = useState(generateCaptcha);
-  const [captchaInput, setCaptchaInput] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState("");
   const [buttonLabel, setButtonLabel] = useState("Send Email");
   const [isVerified, setIsVerified] = useState(false);
-  const [captchaError, setCaptchaError] = useState(false);
+  const [cooldown, setCooldown] = useState(0); // Anti-spam countdown timer
+  const [submitError, setSubmitError] = useState("");
 
-  // ── Derived: Is main form valid? ──
-  const isFormValid = useMemo(() => {
-    const { username, email, subject, message } = formData;
-    return (
-      username.trim() !== "" &&
-      isValidEmail(email) &&
-      subject.trim() !== "" &&
-      message.trim() !== ""
-    );
+  // Anti-spam countdown logic
+  useEffect(() => {
+    let timer;
+    if (cooldown > 0) {
+      setButtonLabel(`Kirim ulang dalam ${cooldown} detik...`);
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    } else if (cooldown === 0 && buttonLabel.includes("Kirim ulang dalam")) {
+      setButtonLabel("Send Email");
+    }
+    return () => clearTimeout(timer);
+  }, [cooldown, buttonLabel]);
+
+  // ── Data Validation ──
+  const validationErrors = useMemo(() => {
+    const errs = { username: "", email: "", subject: "", message: "", xss: "" };
+    
+    // Check XSS first for early termination warning
+    const allInput = Object.values(formData).join(" ");
+    if (isXSSPattern(allInput)) {
+      errs.xss = "Input mengandung karakter atau pola yang tidak diperbolehkan.";
+    }
+
+    if (formData.username.trim() === "") {
+      errs.username = "Nama wajib diisi.";
+    } else if (formData.username.length > 50) {
+      errs.username = "Maksimal 50 karakter.";
+    } else if (!isValidName(formData.username)) {
+      errs.username = "Hanya menerima huruf, angka, spasi, titik, apostrof, dan tanda hubung.";
+    }
+
+    if (formData.email.trim() === "") {
+      errs.email = "Email wajib diisi.";
+    } else if (!isValidEmail(formData.email)) {
+      errs.email = "Format email tidak valid.";
+    }
+
+    const subjectWords = countWords(formData.subject);
+    if (formData.subject.trim() === "") {
+      errs.subject = "Subjek wajib diisi.";
+    } else if (subjectWords > 50) {
+      errs.subject = "Subjek maksimal 50 kata.";
+    }
+
+    const messageWords = countWords(formData.message);
+    if (formData.message.trim() === "") {
+      errs.message = "Pesan wajib diisi.";
+    } else if (messageWords > 100) {
+      errs.message = "Pesan maksimal 100 kata.";
+    }
+
+    return errs;
   }, [formData]);
+
+  const isFormValid =
+    !validationErrors.xss &&
+    !validationErrors.username &&
+    !validationErrors.email &&
+    !validationErrors.subject &&
+    !validationErrors.message &&
+    cooldown === 0;
 
   // ── Derived: Is verification modal valid? ──
   const isVerifyReady = useMemo(
-    () => isRobotChecked && captchaInput === captchaCode,
-    [isRobotChecked, captchaInput, captchaCode]
+    () => !!recaptchaToken,
+    [recaptchaToken]
   );
 
   // ── Handlers ──
@@ -64,27 +105,29 @@ export const ContactForm = () => {
   }, []);
 
   const openModal = useCallback(() => {
-    setCaptchaCode(generateCaptcha());
-    setCaptchaInput("");
-    setIsRobotChecked(false);
-    setCaptchaError(false);
+    if (validationErrors.xss) {
+      setSubmitError(validationErrors.xss);
+      return;
+    }
+    setSubmitError("");
+    setRecaptchaToken("");
     setShowModal(true);
-  }, []);
+  }, [validationErrors.xss]);
 
   const closeModal = useCallback(() => {
     setShowModal(false);
   }, []);
 
-  const refreshCaptcha = useCallback(() => {
-    setCaptchaCode(generateCaptcha());
-    setCaptchaInput("");
-    setCaptchaError(false);
-  }, []);
-
   const handleVerifyAndSend = useCallback(() => {
-    // Case-sensitive captcha check
-    if (captchaInput !== captchaCode) {
-      setCaptchaError(true);
+    if (!recaptchaToken) {
+      return;
+    }
+
+    // ── Pre-Submit XSS Double Check ──
+    const allInput = Object.values(formData).join(" ");
+    if (isXSSPattern(allInput)) {
+      setShowModal(false);
+      setSubmitError("Permintaan ditolak: Input mengandung karakter atau pola yang tidak diperbolehkan.");
       return;
     }
 
@@ -115,12 +158,12 @@ export const ContactForm = () => {
         nama: formData.username,
         email: formData.email,
         subjek: formData.subject,
-        pesan: formData.message
+        pesan: formData.message,
+        "g-recaptcha-response": recaptchaToken
       })
     })
     .then(async (response) => {
       if (response.ok) {
-        console.log('SUCCESS!');
         setButtonLabel("✓ Berhasil Terkirim");
         alert(
           `✅ Email berhasil dikirim!\n\nDari: ${formData.username} (${formData.email})\nSubjek: ${formData.subject}`
@@ -128,38 +171,33 @@ export const ContactForm = () => {
         
         setTimeout(() => {
           setFormData({ username: "", email: "", subject: "", message: "" });
-          setButtonLabel("Send Email");
           setIsVerified(false);
-          setCaptchaInput("");
-          setIsRobotChecked(false);
+          setRecaptchaToken("");
+          setCooldown(5); // Anti spam cooldown
         }, 2000);
       } else {
         const data = await response.json().catch(() => ({}));
-        console.log('FAILED...', data);
         setButtonLabel("❌ Gagal");
         alert(`❌ Gagal mengirim pesan. Pastikan URL Formspree benar.`);
         
         setTimeout(() => {
           setButtonLabel("Send Email");
           setIsVerified(false);
-          setCaptchaInput("");
-          setIsRobotChecked(false);
+          setRecaptchaToken("");
         }, 2000);
       }
     })
     .catch((error) => {
-      console.log('NETWORK ERROR...', error);
       setButtonLabel("❌ Gagal");
       alert(`❌ Koneksi Terputus. Pastikan internet Anda aktif.`);
       
       setTimeout(() => {
         setButtonLabel("Send Email");
         setIsVerified(false);
-        setCaptchaInput("");
-        setIsRobotChecked(false);
+        setRecaptchaToken("");
       }, 2000);
     });
-  }, [captchaInput, captchaCode, formData]);
+  }, [recaptchaToken, formData]);
 
   // ── Close modal on Escape key ──
   useEffect(() => {
@@ -193,6 +231,13 @@ export const ContactForm = () => {
           </p>
         </div>
 
+        {submitError && (
+          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm flex items-start gap-2">
+            <X className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <p>{submitError}</p>
+          </div>
+        )}
+
         {/* ═══════════════ TAHAP 1: FORMULIR UTAMA ═══════════════ */}
         <form
           onSubmit={(e) => {
@@ -205,10 +250,13 @@ export const ContactForm = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="cf-username"
-              className="text-sm font-semibold text-foreground flex items-center gap-1.5"
+              className="text-sm font-semibold text-foreground flex items-center justify-between"
             >
-              <User className="w-4 h-4 text-primary" />
-              Username
+              <span className="flex items-center gap-1.5">
+                <User className="w-4 h-4 text-primary" />
+                Username
+              </span>
+              <span className="text-xs font-normal text-muted-foreground">{formData.username.length}/50</span>
             </label>
             <input
               id="cf-username"
@@ -216,12 +264,17 @@ export const ContactForm = () => {
               name="username"
               value={formData.username}
               onChange={handleInputChange}
+              maxLength={50}
               placeholder="Masukkan nama lengkap"
-              className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200"
+              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
+                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+                         transition-all duration-200 ${validationErrors.username && formData.username ? 'border-destructive' : 'border-input'}`}
             />
+            {formData.username && validationErrors.username && (
+              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                <X className="w-3 h-3" /> {validationErrors.username}
+              </p>
+            )}
           </div>
 
           {/* Email */}
@@ -240,14 +293,13 @@ export const ContactForm = () => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="contoh@email.com"
-              className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200"
+              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
+                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+                         transition-all duration-200 ${validationErrors.email && formData.email ? 'border-destructive' : 'border-input'}`}
             />
-            {formData.email && !isValidEmail(formData.email) && (
+            {formData.email && validationErrors.email && (
               <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                <X className="w-3 h-3" /> Format email tidak valid
+                <X className="w-3 h-3" /> {validationErrors.email}
               </p>
             )}
           </div>
@@ -256,10 +308,15 @@ export const ContactForm = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="cf-subject"
-              className="text-sm font-semibold text-foreground flex items-center gap-1.5"
+              className="text-sm font-semibold text-foreground flex items-center justify-between"
             >
-              <FileText className="w-4 h-4 text-primary" />
-              Subjek
+              <span className="flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-primary" />
+                Subjek
+              </span>
+              <span className={`text-xs font-normal ${countWords(formData.subject) > 50 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                {countWords(formData.subject)}/50 kata
+              </span>
             </label>
             <input
               id="cf-subject"
@@ -268,21 +325,30 @@ export const ContactForm = () => {
               value={formData.subject}
               onChange={handleInputChange}
               placeholder="Subjek pesan Anda"
-              className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200"
+              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
+                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+                         transition-all duration-200 ${validationErrors.subject && formData.subject ? 'border-destructive' : 'border-input'}`}
             />
+            {formData.subject && countWords(formData.subject) > 50 && (
+              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                <X className="w-3 h-3" /> Subjek Anda melebih batas 50 kata.
+              </p>
+            )}
           </div>
 
           {/* Pesan */}
           <div className="space-y-1.5">
             <label
               htmlFor="cf-message"
-              className="text-sm font-semibold text-foreground flex items-center gap-1.5"
+              className="text-sm font-semibold text-foreground flex items-center justify-between"
             >
-              <MessageSquare className="w-4 h-4 text-primary" />
-              Pesan
+              <span className="flex items-center gap-1.5">
+                <MessageSquare className="w-4 h-4 text-primary" />
+                Pesan
+              </span>
+              <span className={`text-xs font-normal ${countWords(formData.message) > 100 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                {countWords(formData.message)}/100 kata
+              </span>
             </label>
             <textarea
               id="cf-message"
@@ -291,22 +357,28 @@ export const ContactForm = () => {
               value={formData.message}
               onChange={handleInputChange}
               placeholder="Tulis pesan Anda di sini..."
-              className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground resize-none
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200"
+              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
+                         placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
+                         transition-all duration-200 ${validationErrors.message && formData.message ? 'border-destructive' : 'border-input'}`}
             />
+            {formData.message && countWords(formData.message) > 100 && (
+              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                <X className="w-3 h-3" /> Pesan Anda melebihi batas 100 kata.
+              </p>
+            )}
           </div>
 
           {/* ── Tombol Send Email ── */}
           <button
             type="submit"
-            disabled={!isFormValid || isVerified}
+            disabled={!isFormValid || isVerified || cooldown > 0}
             className={`w-full py-3 rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2
                         transition-colors duration-300 cursor-pointer
                         ${
                           isVerified
                             ? "bg-emerald-500 text-white cursor-default"
+                            : cooldown > 0 
+                            ? "bg-primary/20 text-primary cursor-not-allowed"
                             : isFormValid
                             ? "gradient-primary text-primary-foreground hover:opacity-90 shadow-elegant"
                             : "bg-gray-400 text-white cursor-not-allowed opacity-60"
@@ -314,6 +386,8 @@ export const ContactForm = () => {
           >
             {isVerified ? (
               <CheckCircle2 className="w-5 h-5" />
+            ) : cooldown > 0 ? (
+              <RefreshCw className="w-5 h-5 animate-spin" />
             ) : (
               <Mail className="w-5 h-5" />
             )}
@@ -356,117 +430,11 @@ export const ContactForm = () => {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5">
-              {/* ── Checkbox "I'm not a robot" ── */}
-              <label
-                htmlFor="cf-robot-check"
-                className="flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-primary/40 cursor-pointer
-                           transition-all duration-200 select-none group"
-              >
-                <div className="relative">
-                  <input
-                    id="cf-robot-check"
-                    type="checkbox"
-                    checked={isRobotChecked}
-                    onChange={(e) => setIsRobotChecked(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div
-                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200
-                      ${
-                        isRobotChecked
-                          ? "bg-primary border-primary"
-                          : "border-gray-300 bg-white group-hover:border-primary/50"
-                      }`}
-                  >
-                    {isRobotChecked && (
-                      <svg
-                        className="w-4 h-4 text-primary-foreground"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-foreground">
-                  I'm not a robot
-                </span>
-                <ShieldCheck className="w-5 h-5 text-muted-foreground ml-auto" />
-              </label>
-
-              {/* ── Captcha Display ── */}
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Masukkan kode berikut (case-sensitive):
-                </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="flex-1 bg-muted/60 border border-border rounded-xl px-5 py-3 text-center select-none
-                                relative overflow-hidden"
-                  >
-                    {/* Decorative noise lines */}
-                    <div className="absolute inset-0 opacity-10 pointer-events-none">
-                      <div className="absolute top-1/3 left-0 right-0 h-px bg-foreground rotate-2" />
-                      <div className="absolute top-2/3 left-0 right-0 h-px bg-foreground -rotate-1" />
-                      <div className="absolute top-1/2 left-0 right-0 h-px bg-foreground rotate-[0.5deg]" />
-                    </div>
-                    <span
-                      className="font-mono text-2xl font-bold tracking-[0.35em] italic text-foreground"
-                      style={{
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
-                        letterSpacing: "0.35em",
-                      }}
-                    >
-                      {captchaCode}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={refreshCaptcha}
-                    className="p-2.5 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground
-                               hover:text-primary transition-all duration-200 cursor-pointer"
-                    aria-label="Refresh captcha"
-                    title="Generate captcha baru"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* ── Captcha Input ── */}
-              <div className="space-y-1.5">
-                <input
-                  id="cf-captcha-input"
-                  type="text"
-                  value={captchaInput}
-                  onChange={(e) => {
-                    setCaptchaInput(e.target.value);
-                    setCaptchaError(false);
-                  }}
-                  placeholder="Ketik kode captcha di sini"
-                  autoComplete="off"
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-mono tracking-widest text-center
-                             bg-background text-foreground
-                             placeholder:text-muted-foreground placeholder:font-sans placeholder:tracking-normal
-                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                             transition-all duration-200
-                             ${captchaError ? "border-destructive ring-2 ring-destructive/30" : "border-input"}`}
-                />
-                {captchaError && (
-                  <p className="text-xs text-destructive flex items-center gap-1 justify-center">
-                    <X className="w-3 h-3" /> Kode captcha tidak sesuai
-                    (perhatikan huruf besar/kecil)
-                  </p>
-                )}
-              </div>
+            <div className="p-6 space-y-6 flex flex-col items-center">
+              <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || ""}
+                onChange={(token) => setRecaptchaToken(token)}
+              />
 
               {/* ── Tombol Verify & Send ── */}
               <button
@@ -485,11 +453,9 @@ export const ContactForm = () => {
                 Verify &amp; Send
               </button>
 
-              {/* Hint text */}
-              <p className="text-[11px] text-center text-muted-foreground">
-                Verifikasi ini bersifat{" "}
-                <span className="font-semibold">case-sensitive</span>. Pastikan
-                huruf besar dan kecil sesuai.
+              <p className="text-[11px] text-center text-muted-foreground w-full">
+                Website ini dilindungi oleh reCAPTCHA dan Kebijakan Privasi serta
+                Persyaratan Layanan Google yang berlaku.
               </p>
             </div>
           </div>

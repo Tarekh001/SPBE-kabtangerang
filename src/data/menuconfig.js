@@ -61,9 +61,9 @@ const mergeMenus = (staticMenus, apiMenus) => {
   });
 
   if (newApiMenus.length > 0) {
-    const katalogMenu = {
-      titleID: 'Katalog',
-      titleEN: 'Catalog',
+    const produkMenu = {
+      titleID: 'Produk',
+      titleEN: 'Produk',
       path: '#',
       children: newApiMenus.map(item => ({
         ...item,
@@ -74,9 +74,9 @@ const mergeMenus = (staticMenus, apiMenus) => {
     
     const kontakIdx = merged.findIndex(s => s.titleID.toLowerCase() === 'kontak');
     if (kontakIdx >= 0) {
-      merged.splice(kontakIdx, 0, katalogMenu);
+      merged.splice(kontakIdx, 0, produkMenu);
     } else {
-      merged.push(katalogMenu);
+      merged.push(produkMenu);
     }
   }
 
