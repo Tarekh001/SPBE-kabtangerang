@@ -5,31 +5,13 @@ import {
 } from "lucide-react";
 import { useDynamicMenu } from "@/hooks/useDynamicMenu";
 import { useNavigate, useLocation } from "react-router-dom";
+import { fetchDomains, fetchAspek, fetchIndikator, fetchRegulasiList, fetchCategoryRegulasi } from "@/utils/helpers";
 
-/* ── Searchable content data for global search ── */
-const searchableItems = [
-  { label: "Tim Koordinasi Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
-  { label: "Rencana Induk Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
-  { label: "Arsitektur Pemerintahan Digital", section: "indikator", domain: "Tata Kelola" },
-  { label: "Peta Rencana Pemerintahan Digital", section: "indikator", domain: "Tata Kelola" },
-  { label: "Jaringan Intra Pemerintah", section: "indikator", domain: "Tata Kelola" },
-  { label: "Penerapan Manajemen Risiko", section: "indikator", domain: "Manajemen" },
-  { label: "Audit Keamanan Pemerintahan Digital", section: "indikator", domain: "Manajemen" },
-  { label: "Satu Data Indonesia", section: "indikator", domain: "Manajemen" },
-  { label: "Portal Layanan Terpadu", section: "indikator", domain: "Layanan" },
-  { label: "Sistem e-Office", section: "indikator", domain: "Layanan" },
-  { label: "Pengaduan Online", section: "indikator", domain: "Layanan" },
-  { label: "Regulasi Pemerintahan Digital Daerah", section: "indikator", domain: "Kebijakan" },
-  { label: "Peraturan Presiden", section: "tentang" },
-  { label: "Peraturan Menteri", section: "tentang" },
-  { label: "Pedoman Menteri", section: "tentang" },
-  { label: "Peraturan Walikota", section: "tentang" },
-  { label: "Keputusan Walikota", section: "tentang" },
-  { label: "Tentang ", section: "tentang" },
-  { label: "Pengertian Pemerintahan Digital", section: "tentang" },
-  { label: "Implementasi Pemerintahan Digital", section: "implementasi" },
-  { label: "Kebijakan Internal Pemerintahan Digital", section: "indikator", domain: "Kebijakan" },
-  { label: "Peraturan Pemerintah", section: "tentang" },
+/* ── Static searchable content data for global search ── */
+const staticSearchableItems = [
+  { label: "Tentang Pemerintahan Digital", section: "tentang", type: "Informasi" },
+  { label: "Pengertian Pemerintahan Digital", section: "tentang", type: "Informasi" },
+  { label: "Implementasi Pemerintahan Digital", section: "implementasi", type: "Informasi" },
 ];
 
 const extractTargetId = (path) => {
@@ -55,9 +37,80 @@ export const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchableItems, setSearchableItems] = useState(staticSearchableItems);
   const navRef = useRef(null);
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    const loadSearchData = async () => {
+      try {
+        const [
+          domainsResult,
+          aspectsResult,
+          indicatorsResult,
+          categoriesResult,
+          regulationsResult
+        ] = await Promise.allSettled([
+          fetchDomains(),
+          fetchAspek(),
+          fetchIndikator(),
+          fetchCategoryRegulasi(),
+          fetchRegulasiList()
+        ]);
+
+        if (!active) return;
+
+        const domains = domainsResult.status === 'fulfilled' ? domainsResult.value : [];
+        const aspects = aspectsResult.status === 'fulfilled' ? aspectsResult.value : [];
+        const indicators = indicatorsResult.status === 'fulfilled' ? indicatorsResult.value : [];
+        const categories = categoriesResult.status === 'fulfilled' ? categoriesResult.value : [];
+        const regulations = regulationsResult.status === 'fulfilled' ? regulationsResult.value : [];
+
+        const dynamicItems = [];
+
+        // 1. Indikator
+        indicators.forEach(ind => {
+          const aspek = aspects.find((a) => String(a.id) === String(ind.aspekId));
+          const domain = aspek ? domains.find((d) => String(d.id) === String(aspek.domainId)) : null;
+          dynamicItems.push({
+            label: ind.name,
+            section: "indikator",
+            domain: domain ? domain.name : null,
+            type: "Indikator"
+          });
+        });
+
+        // 2. Kategori Regulasi
+        categories.forEach(cat => {
+          dynamicItems.push({
+            label: cat.name,
+            section: "tentang",
+            type: "Kategori Regulasi"
+          });
+        });
+
+        // 3. Regulasi
+        regulations.forEach(reg => {
+          dynamicItems.push({
+            label: reg.title,
+            section: "tentang",
+            type: "Regulasi"
+          });
+        });
+
+        setSearchableItems([...staticSearchableItems, ...dynamicItems]);
+      } catch (err) {
+        console.error("Gagal memuat data pencarian global:", err);
+      }
+    };
+
+    loadSearchData();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("spbe-theme");
@@ -143,7 +196,7 @@ export const Navbar = () => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase();
     return searchableItems.filter((item) => item.label.toLowerCase().includes(q)).slice(0, 8);
-  }, [searchQuery]);
+  }, [searchQuery, searchableItems]);
 
   return (
     <header className="sticky top-0 z-50 w-full" ref={navRef}>
@@ -176,7 +229,10 @@ export const Navbar = () => {
                       <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                       <div className="min-w-0">
                         <div className="font-medium truncate">{item.label}</div>
-                        <div className="text-xs text-muted-foreground">{item.domain ? `Domain: ${item.domain}` : `Section: ${item.section}`}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {item.type || (item.domain ? `Domain: ${item.domain}` : `Section: ${item.section}`)}
+                          {item.domain && ` • Domain: ${item.domain}`}
+                        </div>
                       </div>
                     </button>
                   ))
@@ -288,7 +344,13 @@ export const Navbar = () => {
                       searchResults.map((item, idx) => (
                         <button key={idx} onClick={() => handleSearchResultClick(item)} className="w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-secondary transition-all border-b border-border/50 last:border-0">
                           <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                          <span className="truncate">{item.label}</span>
+                          <div className="min-w-0">
+                            <div className="font-medium truncate">{item.label}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {item.type || (item.domain ? `Domain: ${item.domain}` : `Section: ${item.section}`)}
+                              {item.domain && ` • Domain: ${item.domain}`}
+                            </div>
+                          </div>
                         </button>
                       ))
                     ) : (

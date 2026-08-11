@@ -136,6 +136,12 @@ export const ContactForm = () => {
     setIsVerified(true);
     setButtonLabel("Mengirim...");
 
+    // ── Normalisasi Data ──
+    const normalizedUsername = formData.username.trim().replace(/\s+/g, " ");
+    const normalizedEmail = formData.email.trim().toLowerCase();
+    const normalizedSubject = formData.subject.trim().replace(/\s+/g, " ");
+    const normalizedMessage = formData.message.trim();
+
     const formspreeUrl = import.meta.env.VITE_FORMSPREE_URL || '';
 
     if (!formspreeUrl || formspreeUrl.includes('ganti_dengan_id_anda')) {
@@ -155,10 +161,10 @@ export const ContactForm = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        nama: formData.username,
-        email: formData.email,
-        subjek: formData.subject,
-        pesan: formData.message,
+        nama: normalizedUsername,
+        email: normalizedEmail,
+        subjek: normalizedSubject,
+        pesan: normalizedMessage,
         "g-recaptcha-response": recaptchaToken
       })
     })
