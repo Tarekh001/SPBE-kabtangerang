@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Search, Filter, ChevronLeft, ChevronRight, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { fetchDomains, fetchAspek, fetchIndikator } from "@/utils/helpers";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export const Indikator = () => {
   // ── Data state ──
@@ -159,23 +161,53 @@ export const Indikator = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="text-sm text-muted-foreground">Memuat data indikator...</span>
+          <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden mb-6 mt-8 motion-safe:animate-fade-in" aria-live="polite" aria-busy="true">
+            <div className="p-5 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+               <div className="w-32 h-8 bg-secondary/50 rounded motion-safe:animate-pulse" />
+               <div className="w-full sm:w-64 h-10 bg-secondary/50 rounded-lg motion-safe:animate-pulse" />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-secondary/20 border-b border-border">
+                  <tr>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <th key={i} className="px-6 py-4"><div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-20"></div></th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {[1, 2, 3, 4].map((row) => (
+                    <tr key={row}>
+                      <td className="px-6 py-4"><div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-6"></div></td>
+                      <td className="px-6 py-4"><div className="h-6 bg-border/40 rounded-full motion-safe:animate-pulse w-24"></div></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-32"></div></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-48"></div></td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-full max-w-[200px] mb-2"></div>
+                        <div className="h-4 bg-border/40 rounded motion-safe:animate-pulse w-3/4 max-w-[150px]"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <div className="max-w-md mx-auto">
-            <div className="flex items-center gap-3 py-6 px-5 bg-destructive/10 border border-destructive/20 rounded-xl">
-              <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
-              <span className="text-sm text-destructive">{error}</span>
+          <div className="max-w-md mx-auto py-12 motion-safe:animate-fade-in-up" role="alert">
+            <div className="flex items-start gap-4 py-6 px-5 bg-destructive/10 border border-destructive/20 rounded-xl">
+              <AlertCircle className="w-6 h-6 text-destructive shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-destructive mb-1">Data tidak dapat dimuat</h3>
+                <p className="text-sm text-destructive/90 leading-relaxed">{error}</p>
+              </div>
             </div>
-            <div className="text-center mt-4">
-              <button onClick={loadData} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
-                <RefreshCw className="w-4 h-4" /> Coba Lagi
-              </button>
+            <div className="text-center mt-6">
+              <Button onClick={loadData} leftIcon={<RefreshCw className="w-4 h-4" />}>
+                Coba Lagi
+              </Button>
             </div>
           </div>
         )}
@@ -183,84 +215,136 @@ export const Indikator = () => {
         {/* Konten */}
         {!loading && !error && (
           <>
-            <div className="bg-card rounded-2xl p-5 shadow-soft mb-6 space-y-4">
+            <div className="bg-card rounded-2xl p-5 shadow-sm border border-border mb-6 space-y-5">
               {/* Baris 1: Label Filter Domain */}
-              <div>
-                <button className="pill gradient-primary text-primary-foreground inline-flex items-center gap-2">
-                  <Filter className="w-4 h-4" /> Filter Domain
-                </button>
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <Filter className="w-4 h-4 text-primary" />
+                <h3>Filter Domain</h3>
               </div>
 
-              {/* Baris 2: Domain category pills — horizontal, left aligned */}
-              <div className="flex items-center justify-start gap-3 flex-wrap">
+              {/* Baris 2: Domain category tabs — horizontal, scrollable on mobile */}
+              <div 
+                role="group" 
+                aria-label="Filter berdasarkan domain"
+                className="flex items-center justify-start gap-2 overflow-x-auto pb-2 -mx-2 px-2 sm:mx-0 sm:px-0 sm:pb-0 scrollbar-hide"
+              >
                 {domainNames.map((d) => (
                   <button
                     key={d}
+                    type="button"
+                    aria-pressed={activeDomain === d}
                     ref={(el) => { domainRefs.current[d] = el; }}
                     onClick={() => handleDomainChange(d)}
-                    className={`pill border-2 transition-all ${
+                    className={`shrink-0 px-4 py-2 text-sm font-semibold rounded-full border transition-all focus-visible:ring-2 focus-visible:ring-accent outline-none ${
                       activeDomain === d
-                        ? "gradient-primary text-primary-foreground border-transparent shadow-soft"
-                        : "bg-white text-primary border-primary hover:bg-primary/5"
-                    } ${highlightedDomain === d ? "animate-highlight-pulse ring-2 ring-accent ring-offset-2" : ""}`}
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                        : "bg-white text-muted-foreground border-border hover:bg-secondary hover:text-foreground"
+                    } ${highlightedDomain === d ? "motion-safe:animate-highlight-pulse ring-2 ring-accent ring-offset-2" : ""}`}
                   >
                     {d}
                   </button>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-4 flex-wrap">
+              {/* Baris 3: Pencarian dan Entri */}
+              <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-border">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>Tampilkan</span>
-                  <select value={entriesPerPage} onChange={(e) => handleEntriesChange(e.target.value)} className="appearance-none bg-secondary rounded-lg px-3 py-1.5 text-foreground font-semibold border border-border focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer spbe-select">
+                  <label htmlFor="entries-select">Tampilkan</label>
+                  <select 
+                    id="entries-select" 
+                    value={entriesPerPage} 
+                    onChange={(e) => handleEntriesChange(e.target.value)} 
+                    className="appearance-none bg-background rounded-md px-3 py-1.5 text-foreground font-semibold border border-input focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer hover:border-primary/50 transition-colors"
+                  >
                     <option value={4}>4</option>
                     <option value={8}>8</option>
                     <option value={12}>12</option>
+                    <option value={20}>20</option>
                   </select>
                   <span>entri</span>
                 </div>
-                <div className="relative">
+                
+                <div className="relative w-full sm:w-auto min-w-[200px]">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input value={searchQuery} onChange={(e) => handleSearchChange(e.target.value)} placeholder="Cari indikator..." className="pl-9 pr-4 py-2 rounded-lg bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                  <Input 
+                    type="search"
+                    aria-label="Cari indikator"
+                    value={searchQuery} 
+                    onChange={(e) => handleSearchChange(e.target.value)} 
+                    placeholder="Cari indikator..." 
+                    className="pl-9 w-full rounded-md" 
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden mb-6">
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="gradient-primary text-primary-foreground">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-secondary/40 text-muted-foreground border-b border-border text-xs uppercase tracking-wider">
+                    <tr>
                       {["No", "Domain", "Aspek", "Indikator", "Penjelasan"].map((h) => (
-                        <th key={h} className="px-6 py-4 text-left font-semibold">{h}</th>
+                        <th key={h} scope="col" className="px-6 py-4 font-semibold">{h}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border">
                     {paginatedData.map((row, i) => (
-                      <tr key={row.no} className={`border-b border-border hover:bg-secondary/50 transition-colors animate-fade-in ${highlightedDomain && row.domain === highlightedDomain ? "bg-accent/10" : ""}`} style={{ animationDelay: `${i * 0.05}s` }}>
+                      <tr key={row.no} className={`hover:bg-secondary/30 transition-colors motion-safe:animate-fade-in ${highlightedDomain && row.domain === highlightedDomain ? "bg-accent/10" : ""}`} style={{ animationDelay: `${i * 0.05}s` }}>
                         <td className="px-6 py-4 font-semibold text-primary">{row.no}</td>
-                        <td className="px-6 py-4"><span className="pill text-xs bg-secondary text-primary">{row.domain}</span></td>
-                        <td className="px-6 py-4">{row.aspek}</td>
-                        <td className="px-6 py-4 font-medium">{row.indikator}</td>
-                        <td className="px-6 py-4 text-muted-foreground max-w-xs">{row.penjelasan}</td>
+                        <td className="px-6 py-4 whitespace-nowrap"><span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-secondary text-primary border border-primary/10">{row.domain}</span></td>
+                        <td className="px-6 py-4 min-w-[150px] font-medium text-foreground">{row.aspek}</td>
+                        <td className="px-6 py-4 min-w-[200px] text-foreground font-semibold">{row.indikator}</td>
+                        <td className="px-6 py-4 min-w-[250px] text-muted-foreground leading-relaxed">{row.penjelasan}</td>
                       </tr>
                     ))}
                     {paginatedData.length === 0 && (
-                      <tr><td colSpan={5} className="text-center py-10 text-muted-foreground">Tidak ada data yang ditemukan.</td></tr>
+                      <tr>
+                        <td colSpan={5} className="px-6 py-16 text-center text-muted-foreground" aria-live="polite">
+                          <p className="text-base font-medium">Tidak ada data yang sesuai dengan filter yang dipilih.</p>
+                          <p className="text-sm mt-1 opacity-80">Silakan ubah kata kunci pencarian atau pilihan domain.</p>
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
               </div>
 
-              <div className="flex items-center justify-between p-4 border-t border-border text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-background/50 border-t border-border gap-4 text-sm text-muted-foreground">
                 <span>Menampilkan {enrichedData.length === 0 ? 0 : startIdx + 1}–{Math.min(startIdx + entriesPerPage, enrichedData.length)} dari {enrichedData.length} entri</span>
                 <div className="flex gap-1">
-                  <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={safeCurrentPage <= 1} className="p-2 rounded-lg hover:bg-secondary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"><ChevronLeft className="w-4 h-4" /></button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={safeCurrentPage <= 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  
                   {pageNumbers.map((num) => (
-                    <button key={num} onClick={() => setCurrentPage(num)} className={`px-3 py-1 rounded-lg transition-all ${safeCurrentPage === num ? "gradient-primary text-primary-foreground shadow-soft" : "hover:bg-secondary"}`}>{num}</button>
+                    <Button
+                      key={num}
+                      variant={safeCurrentPage === num ? "primary" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(num)}
+                      aria-label={`Halaman ${num}`}
+                      aria-current={safeCurrentPage === num ? "page" : undefined}
+                    >
+                      {num}
+                    </Button>
                   ))}
-                  <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={safeCurrentPage >= totalPages} className="p-2 rounded-lg hover:bg-secondary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"><ChevronRight className="w-4 h-4" /></button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={safeCurrentPage >= totalPages}
+                    aria-label="Halaman selanjutnya"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </div>

@@ -31,105 +31,147 @@ const socialLinks = [
 
 export const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-background to-secondary/40 pt-16 pb-6 border-t-4 border-primary">
-      <div className="container grid md:grid-cols-3 gap-10">
-
-        {/* ── Bagian Kiri: Logo + Alamat + Kontak ── */}
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-0">
-            <div className="relative w-16 h-16 shrink-0 -mr-2">
-              <img 
-                src={logo} 
-                alt="Logo SPBE" 
-                loading="lazy" 
-                width={64} 
-                height={64} 
-                className="w-16 h-16 object-contain" 
-                style={{ filter: "url(#color-primary-filter)" }}
-              />
-              <svg width="0" height="0" className="absolute">
-                <filter id="color-primary-filter">
-                  <feFlood floodColor="var(--color-primary)" result="flood" />
-                  <feComposite in="flood" in2="SourceAlpha" operator="in" />
-                </filter>
-              </svg>
+    <footer className="bg-gradient-to-b from-background to-secondary/40 pt-12 pb-16 border-t-4 border-primary">
+      <div className="container px-4 sm:px-6 lg:px-8">
+        
+        {/* ── Top Bar: Logo & Social ── */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-border">
+          {/* Brand Logo */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-4">
+              <div className="relative w-14 h-14 shrink-0">
+                <img 
+                  src={logo} 
+                  alt="Logo SPBE Kabupaten Tangerang" 
+                  loading="lazy" 
+                  className="w-full h-full object-contain" 
+                  style={{ filter: "url(#color-primary-filter)" }}
+                />
+                <svg width="0" height="0" className="absolute" aria-hidden="true">
+                  <filter id="color-primary-filter">
+                    <feFlood floodColor="var(--color-primary)" result="flood" />
+                    <feComposite in="flood" in2="SourceAlpha" operator="in" />
+                  </filter>
+                </svg>
+              </div>
             </div>
-            <div className="hidden sm:block h-8 w-px bg-primary/20 mx-1 relative z-10"></div>
-            <a href="https://dev.tangerangkab.my.id/smartcity-landing/" target="_blank" rel="noopener noreferrer" className="shrink-0 transition-transform hover:scale-105">
+
+            {/* Separator */}
+            <div className="w-px h-10 bg-border hidden sm:block" aria-hidden="true"></div>
+
+            {/* Logo SmartCity */}
+            <a 
+              href="https://dev.tangerangkab.my.id/smartcity-landing/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="shrink-0 transition-transform hover:scale-105"
+              aria-label="Portal Tangerang Smart City"
+            >
               <img 
                 src={logoSmartcity} 
                 alt="Tangerang Smart City" 
                 loading="lazy" 
-                className="h-12 w-auto object-contain" 
+                className="h-10 sm:h-11 w-auto object-contain" 
               />
             </a>
           </div>
-          <h4 className="font-bold text-primary">Alamat</h4>
-          <p className="text-sm text-muted-foreground flex gap-2">
-            <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-            Jl. H. Somawinata, Kadu Agung, Kec. Tigaraksa, Kabupaten Tangerang, Banten 15720
-          </p>
-          <h4 className="font-bold text-primary pt-2">Kontak</h4>
-          <p className="text-sm text-muted-foreground flex items-center gap-2"><Phone className="w-4 h-4 text-primary" /> (021) 5990240</p>
-          <p className="text-sm text-muted-foreground flex items-center gap-2"><Mail className="w-4 h-4 text-primary" /> helpdesk@tangerangkab.go.id</p>
-        </div>
 
-        {/* ── Bagian Tengah: Sosial Media ── */}
-        <div className="flex flex-col items-center justify-end space-y-4">
-          <h4 className="font-bold text-primary text-center">Temukan kami di sosial media</h4>
-          <div className="flex gap-3">
+          {/* Social Icons */}
+          <div className="flex items-center gap-3">
             {socialLinks.map(({ Icon, label, href }) => (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-11 h-11 rounded-xl gradient-primary text-primary-foreground grid place-items-center hover-lift hover:rotate-6 transition-all" title={label}>
-                <Icon className="w-5 h-5" />
+              <a 
+                key={label} 
+                href={href} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label={label} 
+                title={label}
+                className="w-10 h-10 rounded-full bg-secondary/80 text-primary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-accent outline-none"
+              >
+                <Icon className="w-5 h-5" aria-hidden="true" />
               </a>
             ))}
           </div>
         </div>
 
-        {/* ── Bagian Kanan: Jam Operasional + Website + Download ── */}
-        <div className="space-y-3">
-          <h4 className="font-bold text-primary">Jam Operasional Pelayanan</h4>
-          <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-primary" /> Senin - Jumat</p>
-          <p className="text-sm text-muted-foreground ml-6">07.30 - 16.00 WIB</p>
-
-          <h4 className="font-bold text-primary pt-2">Website Resmi</h4>
-          <a href="https://tangerangkab.go.id" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-2">
-            <Globe className="w-4 h-4" /> tangerangkab.go.id
-          </a>
-
-          <h4 className="font-bold text-primary pt-2">Unduh Tangerang Gemilang</h4>
-          <div className="flex items-center gap-3">
-            <a
-              href="https://play.google.com/store/apps/details?id=go.id.tangerangkab.gemilang"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"
-            >
-              <img
-                src={googlePlayBadge}
-                alt="GET IT ON Google Play"
-                className="w-[150px] h-auto block"
-                loading="lazy"
-              />
-            </a>
-
-            <a
-              href="https://apps.apple.com/id/app/tangerang-gemilang/id1642259427"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-white border border-gray-200 dark:border-gray-600 overflow-hidden transition-all hover:scale-105 hover:shadow-md"
-            >
-              <img
-                src={appStoreBadge}
-                alt="Download on the App Store"
-                className="w-[150px] h-auto block"
-                loading="lazy"
-              />
-            </a>
+        {/* ── Main Content: 2 Columns ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 pt-10">
+          
+          {/* Column 1: Kontak Kami */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-foreground text-base">Kontak Kami</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+                <span className="leading-relaxed">Jl. H. Somawinata, Kadu Agung, Kec. Tigaraksa,<br/>Kabupaten Tangerang, Banten 15720</span>
+              </li>
+              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Phone className="w-4 h-4 shrink-0 text-primary" aria-hidden="true" /> 
+                (021) 5990240
+              </li>
+              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Mail className="w-4 h-4 shrink-0 text-primary" aria-hidden="true" /> 
+                helpdesk@tangerangkab.go.id
+              </li>
+              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4 shrink-0 text-primary" aria-hidden="true" /> 
+                Senin - Jumat, 07.30 - 16.00 WIB
+              </li>
+            </ul>
           </div>
+
+          {/* Column 3: Layanan & App */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground text-base">Layanan Eksternal</h3>
+              <a 
+                href="https://tangerangkab.go.id" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+              >
+                <Globe className="w-4 h-4 text-primary shrink-0" aria-hidden="true" /> 
+                <span className="group-hover:underline">Website Resmi Pemkab Tangerang</span>
+              </a>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-bold text-foreground text-base">Unduh Aplikasi</h3>
+              <div className="flex flex-col gap-3">
+                <a
+                  href="https://play.google.com/store/apps/details?id=go.id.tangerangkab.gemilang"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-white border border-border overflow-hidden transition-all hover:scale-105 hover:shadow-md inline-block w-[140px]"
+                  aria-label="Unduh di Google Play"
+                >
+                  <img
+                    src={googlePlayBadge}
+                    alt="GET IT ON Google Play"
+                    className="w-full h-auto block"
+                    loading="lazy"
+                  />
+                </a>
+                <a
+                  href="https://apps.apple.com/id/app/tangerang-gemilang/id1642259427"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-white border border-border overflow-hidden transition-all hover:scale-105 hover:shadow-md inline-block w-[140px]"
+                  aria-label="Unduh di App Store"
+                >
+                  <img
+                    src={appStoreBadge}
+                    alt="Download on the App Store"
+                    className="w-full h-auto block"
+                    loading="lazy"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
-
     </footer>
   );
 };

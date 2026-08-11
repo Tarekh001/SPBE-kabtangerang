@@ -1,6 +1,11 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Mail, User, FileText, MessageSquare, ShieldCheck, RefreshCw, X, CheckCircle2 } from "lucide-react";
 import ReCAPTCHA from "react-google-recaptcha";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Helpers
@@ -253,18 +258,15 @@ export const ContactForm = () => {
           className="space-y-5"
         >
           {/* Username */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="cf-username"
-              className="text-sm font-semibold text-foreground flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="cf-username" className="flex items-center gap-1.5">
                 <User className="w-4 h-4 text-primary" />
                 Username
-              </span>
+              </Label>
               <span className="text-xs font-normal text-muted-foreground">{formData.username.length}/50</span>
-            </label>
-            <input
+            </div>
+            <Input
               id="cf-username"
               type="text"
               name="username"
@@ -272,133 +274,110 @@ export const ContactForm = () => {
               onChange={handleInputChange}
               maxLength={50}
               placeholder="Masukkan nama lengkap"
-              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200 ${validationErrors.username && formData.username ? 'border-destructive' : 'border-input'}`}
+              error={validationErrors.username && formData.username}
+              aria-describedby={validationErrors.username && formData.username ? "cf-username-error" : undefined}
             />
             {formData.username && validationErrors.username && (
-              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+              <p id="cf-username-error" className="text-xs text-destructive flex items-center gap-1" role="alert">
                 <X className="w-3 h-3" /> {validationErrors.username}
               </p>
             )}
           </div>
 
           {/* Email */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="cf-email"
-              className="text-sm font-semibold text-foreground flex items-center gap-1.5"
-            >
+          <div className="space-y-2">
+            <Label htmlFor="cf-email" className="flex items-center gap-1.5">
               <Mail className="w-4 h-4 text-primary" />
               Email
-            </label>
-            <input
+            </Label>
+            <Input
               id="cf-email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
               placeholder="contoh@email.com"
-              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200 ${validationErrors.email && formData.email ? 'border-destructive' : 'border-input'}`}
+              error={validationErrors.email && formData.email}
+              aria-describedby={validationErrors.email && formData.email ? "cf-email-error" : undefined}
             />
             {formData.email && validationErrors.email && (
-              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+              <p id="cf-email-error" className="text-xs text-destructive flex items-center gap-1" role="alert">
                 <X className="w-3 h-3" /> {validationErrors.email}
               </p>
             )}
           </div>
 
           {/* Subjek */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="cf-subject"
-              className="text-sm font-semibold text-foreground flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="cf-subject" className="flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-primary" />
                 Subjek
-              </span>
+              </Label>
               <span className={`text-xs font-normal ${countWords(formData.subject) > 50 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
                 {countWords(formData.subject)}/50 kata
               </span>
-            </label>
-            <input
+            </div>
+            <Input
               id="cf-subject"
               type="text"
               name="subject"
               value={formData.subject}
               onChange={handleInputChange}
               placeholder="Subjek pesan Anda"
-              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200 ${validationErrors.subject && formData.subject ? 'border-destructive' : 'border-input'}`}
+              error={validationErrors.subject && formData.subject}
+              aria-describedby={validationErrors.subject && formData.subject ? "cf-subject-error" : undefined}
             />
             {formData.subject && countWords(formData.subject) > 50 && (
-              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+              <p id="cf-subject-error" className="text-xs text-destructive flex items-center gap-1" role="alert">
                 <X className="w-3 h-3" /> Subjek Anda melebih batas 50 kata.
               </p>
             )}
           </div>
 
           {/* Pesan */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="cf-message"
-              className="text-sm font-semibold text-foreground flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="cf-message" className="flex items-center gap-1.5">
                 <MessageSquare className="w-4 h-4 text-primary" />
                 Pesan
-              </span>
+              </Label>
               <span className={`text-xs font-normal ${countWords(formData.message) > 100 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
                 {countWords(formData.message)}/100 kata
               </span>
-            </label>
-            <textarea
+            </div>
+            <Textarea
               id="cf-message"
               name="message"
               rows={4}
               value={formData.message}
               onChange={handleInputChange}
               placeholder="Tulis pesan Anda di sini..."
-              className={`w-full px-4 py-2.5 rounded-xl border bg-background text-foreground text-sm
-                         placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                         transition-all duration-200 ${validationErrors.message && formData.message ? 'border-destructive' : 'border-input'}`}
+              error={validationErrors.message && formData.message}
+              aria-describedby={validationErrors.message && formData.message ? "cf-message-error" : undefined}
             />
             {formData.message && countWords(formData.message) > 100 && (
-              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+              <p id="cf-message-error" className="text-xs text-destructive flex items-center gap-1" role="alert">
                 <X className="w-3 h-3" /> Pesan Anda melebihi batas 100 kata.
               </p>
             )}
           </div>
 
           {/* ── Tombol Send Email ── */}
-          <button
+          <Button
             type="submit"
+            size="lg"
+            variant="primary"
             disabled={!isFormValid || isVerified || cooldown > 0}
-            className={`w-full py-3 rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2
-                        transition-colors duration-300 cursor-pointer
-                        ${
-                          isVerified
-                            ? "bg-emerald-500 text-white cursor-default"
-                            : cooldown > 0 
-                            ? "bg-primary/20 text-primary cursor-not-allowed"
-                            : isFormValid
-                            ? "gradient-primary text-primary-foreground hover:opacity-90 shadow-elegant"
-                            : "bg-gray-400 text-white cursor-not-allowed opacity-60"
-                        }`}
-          >
-            {isVerified ? (
-              <CheckCircle2 className="w-5 h-5" />
-            ) : cooldown > 0 ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
-            ) : (
+            className={cn("w-full shadow-md", isVerified && "bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500")}
+            leftIcon={
+              isVerified ? <CheckCircle2 className="w-5 h-5" /> : 
+              cooldown > 0 ? <RefreshCw className="w-5 h-5 animate-spin" /> : 
               <Mail className="w-5 h-5" />
-            )}
+            }
+          >
             {buttonLabel}
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -443,21 +422,17 @@ export const ContactForm = () => {
               />
 
               {/* ── Tombol Verify & Send ── */}
-              <button
+              <Button
                 type="button"
+                size="lg"
                 onClick={handleVerifyAndSend}
                 disabled={!isVerifyReady}
-                className={`w-full py-3 rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2
-                            transition-colors duration-300 cursor-pointer
-                            ${
-                              isVerifyReady
-                                ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
-                                : "bg-gray-400 text-white cursor-not-allowed opacity-60"
-                            }`}
+                variant="primary"
+                className={cn("w-full shadow-md", isVerifyReady && "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600")}
+                leftIcon={<ShieldCheck className="w-5 h-5" />}
               >
-                <ShieldCheck className="w-5 h-5" />
                 Verify &amp; Send
-              </button>
+              </Button>
 
               <p className="text-[11px] text-center text-muted-foreground w-full">
                 Website ini dilindungi oleh reCAPTCHA dan Kebijakan Privasi serta

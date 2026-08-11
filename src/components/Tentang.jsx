@@ -78,36 +78,36 @@ export const Tentang = () => {
     <>
       <section id="tentang" className="py-12 relative scroll-mt-20">
       <div className="container">
-        <div className="text-center mb-8 animate-fade-in-up">
-          <span className="pill bg-secondary text-primary inline-flex items-center gap-2 mb-2">
+        <div className="text-center mb-10 animate-fade-in-up">
+          <span className="pill bg-secondary text-primary inline-flex items-center gap-2 mb-3">
             <Info className="w-4 h-4" /> Tentang Kami
           </span>
-          <h2 className="text-3xl lg:text-4xl font-extrabold text-gradient">TENTANG PEMERINTAHAN DIGITAL</h2>
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-gradient tracking-tight">Tentang Pemerintahan Digital</h2>
         </div>
 
-        <div className="gradient-hero rounded-[2rem] p-6 lg:p-10 shadow-elegant text-primary-foreground relative overflow-hidden hover-lift transition-all duration-500">
+        <div className="gradient-hero rounded-2xl p-6 lg:p-10 shadow-lg border border-white/10 text-primary-foreground relative overflow-hidden transition-all duration-500">
           <div className="absolute -top-20 -right-20 w-72 h-72 bg-accent/20 blob-shape animate-blob" />
           <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-white/10 blob-shape animate-blob" style={{ animationDelay: "3s" }} />
 
-          <div className="grid lg:grid-cols-2 gap-8 items-center relative">
-            <div className="rounded-2xl overflow-hidden border-4 border-white/30 shadow-elegant hover-lift group">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center relative">
+            <div className="rounded-xl overflow-hidden border border-white/20 shadow-md group">
               <img
                 src={gedung}
                 alt="Kantor Bupati Tangerang"
                 loading="lazy"
                 width={800}
                 height={640}
-                className="w-full h-auto group-hover:scale-110 transition-transform duration-700"
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
               />
             </div>
-            <div className="space-y-3 animate-fade-in-up">
-              <h3 className="text-xl font-bold text-accent">Pengertian Pemerintahan Digital</h3>
-              <p className="text-base leading-relaxed">
-                Berdasarkan <strong className="text-accent">Peraturan Menteri Nomor 8 Tahun 2026</strong>,
-                <strong> Pemerintahan Digital </strong> adalah transformasi pemerintahan yang memanfaatkan
-                                                data dan teknologi digital untuk peningkatan kualitas
-                                                layanan pemerintah guna pencapaian visi, misi, dan
-                                                arah pembangunan nasional.
+            <div className="space-y-4 animate-fade-in-up">
+              <h3 className="text-2xl font-bold text-accent tracking-tight">Pengertian Pemerintahan Digital</h3>
+              <p className="text-base lg:text-lg leading-relaxed opacity-90">
+                Berdasarkan <strong className="text-accent font-semibold">Peraturan Menteri Nomor 8 Tahun 2026</strong>,
+                <strong className="font-semibold"> Pemerintahan Digital </strong> adalah transformasi pemerintahan yang memanfaatkan
+                data dan teknologi digital untuk peningkatan kualitas
+                layanan pemerintah guna pencapaian visi, misi, dan
+                arah pembangunan nasional.
               </p>
             </div>
           </div>
@@ -145,12 +145,13 @@ export const Tentang = () => {
                 const catRegulations = regulasiList.filter((r) => r.categoryRegulasiId === cat.id);
 
                 return (
-                  <div
+                  <button
                     key={cat.id}
                     onClick={() => handleCategoryClick(cat.id)}
-                    className={`backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 group cursor-pointer ${
+                    aria-expanded={isActive}
+                    className={`w-full text-left backdrop-blur-sm rounded-lg p-4 border transition-all duration-300 group focus-visible:ring-2 focus-visible:ring-accent outline-none ${
                       isActive
-                        ? 'bg-white/25 border-accent/50 ring-2 ring-accent/30 scale-[1.02] shadow-lg'
+                        ? 'bg-white/25 border-accent/50 ring-2 ring-accent/30 shadow-md'
                         : 'bg-white/10 border-white/15 hover:bg-white/20'
                     }`}
                   >
@@ -171,7 +172,7 @@ export const Tentang = () => {
                               </li>
                             ))}
                             {count > 3 && (
-                              <li className="text-xs text-accent font-medium">
+                              <li className="text-xs text-accent font-medium mt-1">
                                 +{count - 3} lainnya
                               </li>
                             )}
@@ -180,7 +181,7 @@ export const Tentang = () => {
                       </div>
                       <ChevronDown className={`w-4 h-4 text-accent/60 shrink-0 transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`} />
                     </div>
-                  </div>
+                  </button>
                 );
               };
 
@@ -228,11 +229,11 @@ export const Tentang = () => {
                           ? filteredRegulations.map((reg, idx) => (
                               <div
                                 key={reg.id || idx}
-                                className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col h-[180px] w-full max-w-[240px]"
+                                className="group relative bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-accent/50 transition-all duration-300 flex flex-col h-[180px] w-full max-w-[240px]"
                                 style={{ animationDelay: `${idx * 80}ms`, animationFillMode: 'both' }}
                               >
                                 {/* Aksen gradient atas */}
-                                <div className="h-1 w-full bg-gradient-to-r from-[#0057A4]/50 to-[#0057A4] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="h-1 w-full bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                                 {/* PDF Thumbnail Placeholder */}
                                 <div className="relative mx-2.5 mt-2.5 aspect-[4/3] max-h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex flex-col items-center justify-center overflow-hidden border border-slate-200/60">
@@ -243,8 +244,8 @@ export const Tentang = () => {
                                       <div className="absolute top-6 left-2 right-8 h-[2px] bg-slate-400 rounded" />
                                       <div className="absolute top-8 left-2 right-4 h-[2px] bg-slate-400 rounded" />
                                     </div>
-                                    <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-[#0057A4] group-hover:border-[#0057A4] transition-all duration-300">
-                                      <FileText className="w-3.5 h-3.5 text-[#0057A4] group-hover:text-white transition-colors duration-300" />
+                                    <div className="w-6 h-6 rounded-md bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-0.5 group-hover:scale-110 group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                                      <FileText className="w-3.5 h-3.5 text-primary group-hover:text-white transition-colors duration-300" />
                                     </div>
                                     <span className="text-[7px] font-bold tracking-widest uppercase text-slate-400 bg-white/80 px-1 py-[1px] rounded-full border border-slate-200/50">
                                       PDF
@@ -254,7 +255,7 @@ export const Tentang = () => {
 
                                 {/* Card Body */}
                                 <div className="px-2.5 pt-1.5 pb-2.5 flex-1 flex flex-col justify-between">
-                                  <h5 className="font-semibold text-[11px] text-slate-800 line-clamp-2 group-hover:text-[#0057A4] transition-colors duration-300 leading-tight">
+                                  <h5 className="font-semibold text-[11px] text-slate-800 line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-tight">
                                     {reg.title || `Dokumen Regulasi ${idx + 1}`}
                                   </h5>
                                   <a
@@ -267,7 +268,7 @@ export const Tentang = () => {
                                         alert("File dokumen belum tersedia.");
                                       }
                                     }}
-                                    className="mt-1.5 inline-flex items-center justify-center gap-1 w-full py-1 rounded-md bg-gradient-to-r from-[#0057A4] to-[#0070CC] text-white text-[9px] font-semibold hover:shadow-md hover:shadow-[#0057A4]/25 transition-all duration-300"
+                                    className="mt-1.5 inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded bg-secondary text-primary hover:bg-primary hover:text-primary-foreground text-[10px] font-semibold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent outline-none"
                                   >
                                     <Eye className="w-4 h-4" />
                                     Lihat PDF

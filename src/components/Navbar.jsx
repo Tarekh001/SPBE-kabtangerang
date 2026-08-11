@@ -6,6 +6,7 @@ import {
 import { useDynamicMenu } from "@/hooks/useDynamicMenu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchDomains, fetchAspek, fetchIndikator, fetchRegulasiList, fetchCategoryRegulasi } from "@/utils/helpers";
+import { Button } from "@/components/ui/Button";
 
 /* ── Static searchable content data for global search ── */
 const staticSearchableItems = [
@@ -21,6 +22,10 @@ const extractTargetId = (path) => {
 };
 
 const scrollTo = (id) => {
+  if (id === "beranda") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 };
@@ -130,8 +135,22 @@ export const Navbar = () => {
       if (navRef.current && !navRef.current.contains(e.target)) setActiveDropdown(null);
       if (searchRef.current && !searchRef.current.contains(e.target)) setSearchOpen(false);
     };
+    
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setActiveDropdown(null);
+        setSearchOpen(false);
+        setMobileOpen(false);
+        setMobileExpanded(null);
+      }
+    };
+    
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const toggleDarkMode = () => {
@@ -200,10 +219,10 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full" ref={navRef}>
-      <nav className={`gradient-hero text-primary-foreground transition-all duration-300 ${scrolled ? "shadow-elegant py-0" : "shadow-soft"}`}>
+      <nav aria-label="Main Navigation" className={`gradient-hero text-primary-foreground transition-all duration-300 ${scrolled ? "shadow-elegant py-0" : "shadow-soft"}`}>
         <div className="container flex items-center justify-between h-14 gap-2">
           {/* Logo */}
-          <button onClick={() => handleNavClick("beranda")} className="group flex items-center gap-2 font-display font-extrabold text-xl tracking-wide shrink-0">
+          <button onClick={() => handleNavClick("beranda")} aria-label="Beranda Portal SPBE" className="group flex items-center gap-2 font-display font-extrabold text-xl tracking-wide shrink-0 focus-visible:ring-2 focus-visible:ring-accent outline-none rounded-lg">
             <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur grid place-items-center group-hover:rotate-180 transition-transform duration-500">
               <Globe className="w-4 h-4" />
             </div>
@@ -211,15 +230,15 @@ export const Navbar = () => {
           </button>
 
           {/* Theme Toggle */}
-          <button onClick={toggleDarkMode} className="w-9 h-9 rounded-lg bg-white/15 backdrop-blur grid place-items-center hover:bg-white/25 transition-all duration-300 shrink-0" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} title={darkMode ? "Mode Terang" : "Mode Gelap"}>
+          <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="w-9 h-9 hover:bg-white/25 text-white border-transparent shrink-0 focus-visible:ring-2 focus-visible:ring-accent outline-none" aria-label={darkMode ? "Beralih ke mode terang" : "Beralih ke mode gelap"} title={darkMode ? "Mode Terang" : "Mode Gelap"}>
             {darkMode ? <Sun className="w-4 h-4 text-accent transition-transform duration-300 hover:rotate-180" /> : <Moon className="w-4 h-4 transition-transform duration-300 hover:-rotate-12" />}
-          </button>
+          </Button>
 
           {/* Search Bar */}
           <div className="relative flex-1 max-w-xs hidden md:block" ref={searchRef}>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" />
-              <input ref={searchInputRef} type="text" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} placeholder="Cari indikator, regulasi..." className="w-full pl-9 pr-4 py-1.5 rounded-lg bg-white/15 backdrop-blur border border-white/20 text-sm text-primary-foreground placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:bg-white/20 transition-all" />
+              <input ref={searchInputRef} type="text" id="desktop-search" aria-label="Pencarian Global" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} placeholder="Cari indikator, regulasi..." className="w-full pl-9 pr-4 py-1.5 rounded-lg bg-white/15 backdrop-blur border border-white/20 text-sm text-primary-foreground placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:bg-white/20 transition-all" />
             </div>
             {searchOpen && searchQuery.trim() && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-card text-card-foreground rounded-xl shadow-elegant overflow-hidden animate-scale-in origin-top z-50 max-h-72 overflow-y-auto">
@@ -250,6 +269,8 @@ export const Navbar = () => {
               return (
                 <li key={it.titleID} className="relative">
                   <button
+                    aria-haspopup={it.children ? "true" : "false"}
+                    aria-expanded={it.children ? isOpen : undefined}
                     onClick={() => {
                       if (it.children) {
                         toggleDropdown(it.titleID);
@@ -262,7 +283,7 @@ export const Navbar = () => {
                         if (targetId) handleNavClick(targetId, it.titleID);
                       }
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-white/15 transition-all text-sm font-medium"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-white/15 focus-visible:bg-white/15 focus-visible:ring-2 focus-visible:ring-accent outline-none transition-all text-sm font-medium"
                   >
                     {it.titleID}
                     {it.children && <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />}
@@ -326,9 +347,16 @@ export const Navbar = () => {
           </ul>
 
           {/* Mobile toggle */}
-          <button className="lg:hidden p-2 rounded-lg hover:bg-white/15 transition-transform active:scale-90" onClick={() => { setMobileOpen(!mobileOpen); setMobileExpanded(null); }} aria-label="Toggle menu">
-            {mobileOpen ? <X /> : <Menu />}
-          </button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden hover:bg-white/15 text-white border-transparent focus-visible:ring-accent" 
+            onClick={() => { setMobileOpen(!mobileOpen); setMobileExpanded(null); }} 
+            aria-label={mobileOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </Button>
         </div>
 
         {/* Mobile Menu — Dynamic */}
@@ -337,7 +365,7 @@ export const Navbar = () => {
             <div className="container pt-3 pb-1">
               <div className="relative" ref={searchRef}>
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" />
-                <input type="text" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} placeholder="Cari indikator, regulasi..." className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/15 backdrop-blur border border-white/20 text-sm text-primary-foreground placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all" />
+                <input type="text" aria-label="Pencarian Global Mobile" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }} onFocus={() => setSearchOpen(true)} placeholder="Cari indikator, regulasi..." className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/15 backdrop-blur border border-white/20 text-sm text-primary-foreground placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all" />
                 {searchOpen && searchQuery.trim() && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-card text-card-foreground rounded-xl shadow-elegant overflow-hidden animate-scale-in origin-top z-50 max-h-60 overflow-y-auto">
                     {searchResults.length > 0 ? (
@@ -367,6 +395,8 @@ export const Navbar = () => {
                 return (
                   <li key={it.titleID}>
                     <button
+                      aria-haspopup={it.children ? "true" : "false"}
+                      aria-expanded={it.children ? isExpanded : undefined}
                       onClick={() => {
                         if (it.children) {
                           toggleMobileExpanded(it.titleID);
@@ -382,7 +412,7 @@ export const Navbar = () => {
                           }
                         }
                       }}
-                      className="w-full text-left flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/15 transition-all"
+                      className="w-full text-left flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/15 focus-visible:bg-white/15 focus-visible:ring-2 focus-visible:ring-accent outline-none transition-all"
                     >
                       <span className="flex items-center gap-2 text-sm">{it.titleID}</span>
                       {it.children && <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />}
